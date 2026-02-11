@@ -25,9 +25,11 @@ verifying against actual binary output. The spec is ~3800 lines.
 ## How This Happened
 
 The HAL/S compiler is written in XPL/I, which is an extended dialect of XPL,
-which is a strict subset of PL/I, which is a language IBM designed in 1964
-and nobody has written a new parser for in decades. There are no off-the-shelf
-tools for this. No `npm install xpl-parser`. No crate. Nothing.
+which is a strict subset of PL/I, which is a language IBM designed in 1964.
+Parsers for XPL exist inside compilers (notably Burkey's XCOM-I, which is how
+HAL/S-FC was compiled in the first place), but there was no standalone,
+grammar-driven parser built from the XPL BNF that could be pointed at
+arbitrary source files for analysis. No `npm install xpl-parser`. No crate.
 
 So I wrote one.
 
