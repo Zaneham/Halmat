@@ -1,0 +1,9 @@
+HALMAT DISASSEMBLY: auxmata.bin
+7200 bytes, 1 block(s)
+
+=== BLOCK 0 === (2 atoms, words 2..2)
+
+  ADDR   RAW         TYPE    TAG    COPT    DECODED
+  ----------------------------------------------------------------------
+     2:  002F0802  CTRL           C=1     ?080  (CTRL/?080, 47 ops)
+

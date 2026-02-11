@@ -1,0 +1,303 @@
+HALMAT INSTRUCTION SET
+Extracted from HAL/S-FC Compiler Release 32V0 (XPL Source)
+Source: Virtual AGC Project — yaShuttle/Source Code/PASS.REL32V0
+
+Word format: [TAG:8][NUMOP:8][CLASS:4][OPCODE:8][COPT:3][0:1]
+Operand qualifier (Q): SYT=1 INL=2 VAC=3 XPT=4 LIT=5 IMD=6 AST=7
+
+NAME                     HEX  CLASS   OP    DESCRIPTION
+------------------------------------------------------------------------------
+  CLASS 0: Control/Subscript
+------------------------------------------------------------------------------
+  XEXTN               0x0001  CTRL    0x01
+  XXASN               0x0001  CTRL    0x01
+  XXREC               0x0002  CTRL    0x02
+  XIMRK               0x0003  CTRL    0x03
+  XSMRK               0x0004  CTRL    0x04
+  XIFHD               0x0007  CTRL    0x07
+  XLBL                0x0008  CTRL    0x08
+  XBRA                0x0009  CTRL    0x09
+  XMTRA               0x0009  CTRL    0x09
+  XFBRA               0x000A  CTRL    0x0A
+  XMINV               0x000A  CTRL    0x0A
+  XDCAS               0x000B  CTRL    0x0B
+  XECAS               0x000C  CTRL    0x0C
+  XMVPR               0x000C  CTRL    0x0C
+  XCLBL               0x000D  CTRL    0x0D
+  XDTST               0x000E  CTRL    0x0E
+  XETST               0x000F  CTRL    0x0F
+  XDFOR               0x0010  CTRL    0x10
+  XEXTN               0x0010  CTRL    0x10
+  XEFOR               0x0011  CTRL    0x11
+  XMDET               0x0011  CTRL    0x11
+  XCFOR               0x0012  CTRL    0x12
+  XDSMP               0x0013  CTRL    0x13
+  XMIDN               0x0013  CTRL    0x13
+  XESMP               0x0014  CTRL    0x14
+  XSASN               0x0014  CTRL    0x14
+  XAFOR               0x0015  CTRL    0x15
+  XMASN               0x0015  CTRL    0x15
+  XCTST               0x0016  CTRL    0x16
+  XADLP               0x0017  CTRL    0x17
+  XDLPE               0x0018  CTRL    0x18
+  XDSUB               0x0019  CTRL    0x19
+  XIDLP               0x001A  CTRL    0x1A
+  XTSUB               0x001B  CTRL    0x1B
+  XPCAL               0x001D  CTRL    0x1D
+  XFCAL               0x001E  CTRL    0x1E
+  XREAD(0)            0x001F  CTRL    0x1F
+  XREAD(1)            0x0020  CTRL    0x20
+  XXREC               0x0020  CTRL    0x20
+  XREAD(2)            0x0021  CTRL    0x21
+  XFILE               0x0022  CTRL    0x22
+  XXXST               0x0025  CTRL    0x25
+  XXXND               0x0026  CTRL    0x26
+  XXXAR               0x0027  CTRL    0x27
+  XTDEF               0x002A  CTRL    0x2A
+  XMDEF               0x002B  CTRL    0x2B
+  XFDEF               0x002C  CTRL    0x2C
+  XPDEF               0x002D  CTRL    0x2D
+  XUDEF               0x002E  CTRL    0x2E
+  XCDEF               0x002F  CTRL    0x2F
+  XCLOS               0x0030  CTRL    0x30
+  XIMRK               0x0030  CTRL    0x30
+  XEDCL               0x0031  CTRL    0x31
+  XRTRN               0x0032  CTRL    0x32
+  XTDCL               0x0033  CTRL    0x33
+  XWAIT               0x0034  CTRL    0x34
+  XSGNL               0x0035  CTRL    0x35
+  XCANC               0x0036  CTRL    0x36
+  XTERM               0x0037  CTRL    0x37
+  XPRIO               0x0038  CTRL    0x38
+  XSCHD               0x0039  CTRL    0x39
+  XERON               0x003C  CTRL    0x3C
+  XERSE               0x003D  CTRL    0x3D
+  XMSHP(0)            0x0040  CTRL    0x40
+  XSMRK               0x0040  CTRL    0x40
+  XMSHP(1)            0x0041  CTRL    0x41
+  XMSHP(2)            0x0042  CTRL    0x42
+  XMSHP(3)            0x0043  CTRL    0x43
+  XSFST               0x0045  CTRL    0x45
+  XSFND               0x0046  CTRL    0x46
+  XSFAR               0x0047  CTRL    0x47
+  XBFNC               0x004A  CTRL    0x4A
+  XLFNC               0x004B  CTRL    0x4B
+  XTEQU(1)            0x004D  CTRL    0x4D
+  XTEQU(0)            0x004E  CTRL    0x4E
+  XTASN               0x004F  CTRL    0x4F
+  XXASN(10)           0x004F  CTRL    0x4F
+  XPXRC               0x0050  CTRL    0x50
+  XIDEF               0x0051  CTRL    0x51
+  XICLS               0x0052  CTRL    0x52
+  XNEQU(1)            0x0055  CTRL    0x55
+  XNEQU(0)            0x0056  CTRL    0x56
+  XNASN               0x0057  CTRL    0x57
+  XPMHD               0x0059  CTRL    0x59
+  XPMAR               0x005A  CTRL    0x5A
+  XPMIN               0x005B  CTRL    0x5B
+  XFBRA               0x00A0  CTRL    0xA0
+
+  CLASS 1: Bit Operations
+------------------------------------------------------------------------------
+  XXASN(1)            0x0101  BIT     0x01
+  XBAND               0x0102  BIT     0x02
+  XBOR                0x0103  BIT     0x03
+  XBNOT               0x0104  BIT     0x04
+  XBCAT               0x0105  BIT     0x05
+  XCFOR               0x0120  BIT     0x20
+  XBTOB(0)            0x0121  BIT     0x21
+  XBTOQ(0)            0x0122  BIT     0x22
+  XBTOB(1)            0x0141  BIT     0x41
+  XBTOQ(1)            0x0142  BIT     0x42
+  XCTST               0x0160  BIT     0x60
+  XADLP               0x0170  BIT     0x70
+  XDLPE               0x0180  BIT     0x80
+  XBTOB(4)            0x01A1  BIT     0xA1
+  XBTOQ(4)            0x01A2  BIT     0xA2
+  XBTOB(5)            0x01C1  BIT     0xC1
+  XBTOQ(5)            0x01C2  BIT     0xC2
+  XREAD               0x01F0  BIT     0xF0
+
+  CLASS 2: Character Operations
+------------------------------------------------------------------------------
+  XXASN(2)            0x0201  CHAR    0x01
+  XCCAT               0x0202  CHAR    0x02
+  XWRIT               0x0210  CHAR    0x10
+  XFILE               0x0220  CHAR    0x20
+  XBTOC(0)            0x0221  CHAR    0x21
+  XBTOC(1)            0x0241  CHAR    0x41
+  XXXST               0x0250  CHAR    0x50
+  XXXND               0x0260  CHAR    0x60
+  XXXAR               0x0270  CHAR    0x70
+  XBTOC(4)            0x02A1  CHAR    0xA1
+  XBTOC(5)            0x02C1  CHAR    0xC1
+
+  CLASS 3: Matrix Arithmetic
+------------------------------------------------------------------------------
+  XXASN(3)            0x0301  MAT     0x01
+  XMTRA               0x0329  MAT     0x29
+  XMTOM(0)            0x0341  MAT     0x41
+  XMNEG(0)            0x0344  MAT     0x44
+  XMADD(0)            0x0362  MAT     0x62
+  XMSUB(0)            0x0363  MAT     0x63
+  XMMPR               0x0368  MAT     0x68
+  XVVPR               0x0387  MAT     0x87
+  XMSPR               0x03A5  MAT     0xA5
+  XMSDV(0)            0x03A6  MAT     0xA6
+  XMINV               0x03CA  MAT     0xCA
+
+  CLASS 4: Vector Arithmetic
+------------------------------------------------------------------------------
+  XXASN(4)            0x0401  VEC     0x01
+  XMTOM(1)            0x0441  VEC     0x41
+  XMNEG(1)            0x0444  VEC     0x44
+  XSFST               0x0450  VEC     0x50
+  XSFND               0x0460  VEC     0x60
+  XMVPR               0x046C  VEC     0x6C
+  XVMPR               0x046D  VEC     0x6D
+  XSFAR               0x0470  VEC     0x70
+  XMADD(1)            0x0482  VEC     0x82
+  XMSUB(1)            0x0483  VEC     0x83
+  XVCRS               0x048B  VEC     0x8B
+  XBFNC               0x04A0  VEC     0xA0
+  XVSPR               0x04A5  VEC     0xA5
+  XMSDV(1)            0x04A6  VEC     0xA6
+
+  CLASS 5: Scalar Arithmetic
+------------------------------------------------------------------------------
+  XXASN(5)            0x0501  SCAL    0x01
+  XIDEF               0x0510  SCAL    0x10
+  XICLS               0x0520  SCAL    0x20
+  XBTOS(0)            0x0521  SCAL    0x21
+  XBTOS(1)            0x0541  SCAL    0x41
+  XSIEX               0x0571  SCAL    0x71
+  XSPEX(0)            0x0572  SCAL    0x72
+  XVDOT               0x058E  SCAL    0x8E
+  XBTOS(4)            0x05A1  SCAL    0xA1
+  XMTOM(2)            0x05A1  SCAL    0xA1
+  XSADD(0)            0x05AB  SCAL    0xAB
+  XSSUB(0)            0x05AC  SCAL    0xAC
+  XSSPR(0)            0x05AD  SCAL    0xAD
+  XMSDV(2)            0x05AE  SCAL    0xAE
+  XSEXP               0x05AF  SCAL    0xAF
+  XMNEG(2)            0x05B0  SCAL    0xB0
+  XBTOS(5)            0x05C1  SCAL    0xC1
+  XITOS               0x05C1  SCAL    0xC1
+
+  CLASS 6: Integer Arithmetic
+------------------------------------------------------------------------------
+  XXASN(6)            0x0601  INT     0x01
+  XBTOI(0)            0x0621  INT     0x21
+  XBTOI(1)            0x0641  INT     0x41
+  XBTOI(4)            0x06A1  INT     0xA1
+  XSTOI               0x06A1  INT     0xA1
+  XBTOI(5)            0x06C1  INT     0xC1
+  XMTOM(3)            0x06C1  INT     0xC1
+  XSADD(1)            0x06CB  INT     0xCB
+  XSSUB(1)            0x06CC  INT     0xCC
+  XSSPR(1)            0x06CD  INT     0xCD
+  XMNEG(3)            0x06D0  INT     0xD0
+  XSPEX(1)            0x06D2  INT     0xD2
+
+  CLASS 7: Conditional/Comparison
+------------------------------------------------------------------------------
+  XBTRU               0x0720  COND    0x20
+  XBEQU(1)            0x0725  COND    0x25
+  XBEQU(0)            0x0726  COND    0x26
+  XCEQU(1)            0x0745  COND    0x45
+  XCEQU(0)            0x0746  COND    0x46
+  XCEQU(4)            0x0747  COND    0x47
+  XCEQU(3)            0x0748  COND    0x48
+  XCEQU(5)            0x0749  COND    0x49
+  XCEQU(2)            0x074A  COND    0x4A
+  XMEQU(1)            0x0765  COND    0x65
+  XMEQU(0)            0x0766  COND    0x66
+  XVEQU(1)            0x0785  COND    0x85
+  XVEQU(0)            0x0786  COND    0x86
+  XSEQU(1)            0x07A5  COND    0xA5
+  XSEQU(0)            0x07A6  COND    0xA6
+  XSEQU(4)            0x07A7  COND    0xA7
+  XSEQU(3)            0x07A8  COND    0xA8
+  XSEQU(5)            0x07A9  COND    0xA9
+  XSEQU(2)            0x07AA  COND    0xAA
+  XIEQU(1)            0x07C5  COND    0xC5
+  XIEQU(0)            0x07C6  COND    0xC6
+  XIEQU(4)            0x07C7  COND    0xC7
+  XIEQU(3)            0x07C8  COND    0xC8
+  XIEQU(5)            0x07C9  COND    0xC9
+  XIEQU(2)            0x07CA  COND    0xCA
+  XCAND               0x07E2  COND    0xE2
+  XCOR                0x07E3  COND    0xE3
+  XCNOT               0x07E4  COND    0xE4
+
+  CLASS 8: Initialization
+------------------------------------------------------------------------------
+  XSTRI               0x0801  INIT    0x01
+  XSLRI               0x0802  INIT    0x02
+  XELRI               0x0803  INIT    0x03
+  XETRI               0x0804  INIT    0x04
+  XBINT(0)            0x0821  INIT    0x21
+  XBINT(1)            0x0841  INIT    0x41
+  XBINT(2)            0x0861  INIT    0x61
+  XBINT(3)            0x0881  INIT    0x81
+  XBINT(4)            0x08A1  INIT    0xA1
+  XBINT(5)            0x08C1  INIT    0xC1
+  XNINT               0x08E1  INIT    0xE1
+  XTINT               0x08E2  INIT    0xE2
+  XEINT               0x08E3  INIT    0xE3
+
+Total: 212 unique opcodes
+
+
+HALMAT OPERAND TYPES (Qualifier Q field)
+Operand word: [D:16][T1:8][Q:4][T2:3][1:1]
+
+NAME          Q  MEANING
+------------------------------------------------------------------------------
+XSYT          1  Symbol table pointer
+XINL          2  Internal flow number
+XVAC          3  Virtual accumulator (back pointer)
+XXPT          4  Extended pointer
+XLIT          5  Literal table pointer
+XIMD          6  Immediate numerical value
+XAST          7  Asterisk/atom stack pointer
+XCSZ          8  Component size
+XASZ          9  Array/copy size
+XOFF         10  Offset value
+
+
+HALMAT DATA STRUCTURES
+------------------------------------------------------------------------------
+NAME                       TYPE             BOUND       SOURCE
+------------------------------------------------------------------------------
+CURRENT_ATOM               FIXED            -           ##DRIVER.xpl
+LAST_POP#                  FIXED            -           ##DRIVER.xpl
+ATOM#_FAULT                FIXED            -           ##DRIVER.xpl
+NEXT_ATOM#                 FIXED            -           ##DRIVER.xpl
+HALMAT_BLOCK               BIT(16)          -           ##DRIVER.xpl
+HALMAT_CRAP                BIT(1)           -           ##DRIVER.xpl
+HALMAT_OK                  BIT(1)           -           ##DRIVER.xpl
+HALMAT_RELOCATE_FLAG       BIT(1)           -           ##DRIVER.xpl
+HALMAT_REQUESTED           BIT(1)           -           ##DRIVER.xpl
+HALMAT_OPCODE              BIT(16)          -           ##DRIVER.xpl
+HALMAT_CELL                FIXED            -           ##DRIVER.xpl
+HALMAT_DUMP                BIT(8)           -           ##DRIVER.xpl
+HALMAT_PTR                 FIXED            -           ##DRIVER.xpl
+OPR                        FIXED            -           ##DRIVER.xpl
+HALMAT_NODE_END            BIT(16)          -           ##DRIVER.xpl
+HALMAT_NODE_START          BIT(16)          -           ##DRIVER.xpl
+HALMAT_BLAB                BIT(8)           -           ##DRIVER.xpl
+HALMAT_FILE                BIT(8)           -           ##DRIVER.xpl
+HALMAT                     FIXED            -           ##DRIVER.xpl
+HALMAT_PRINT_PTR           BIT(16)          -           ##DRIVER.xpl
+
+
+HALMAT CONSTANTS (LITERALLY)
+------------------------------------------------------------------------------
+NAME                       VALUE                           SOURCE
+------------------------------------------------------------------------------
+ATOMS                      FOR_ATOMS(%1%).CONST_ATOMS      ##DRIVER.xpl
+ATOM#_LIM                  1799                            ##DRIVER.xpl
+HALMAT_FILE                1                               ##DRIVER.xpl
+HALMAT_BLOCK_SIZE          1800                            ##DRIVER.xpl
+HALMAT_SIZE                1800                            ##DRIVER.xpl
