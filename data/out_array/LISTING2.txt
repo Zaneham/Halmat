@@ -1,0 +1,10 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M| TEST_ARRAY:                                                                    | 1    
+0      1 M| PROGRAM;                                                                       | 2    TEST_ARRAY
+0      1 M|    DECLARE ARR ARRAY(5) SCALAR;                                                | 3    TEST_ARRAY
+0      2 M|    DECLARE INTEGER, I;                                                         | 4    TEST_ARRAY
+0      3 M|    DO FOR I = 1 TO 5;                                                          | 5    TEST_ARRAY
+0      4 M|       ARR  = I;                                                                | 6    TEST_ARRAY
+       4 S|          I                                                                     | 7    TEST_ARRAY
+0      5 M|    END;                                                                        | 8    TEST_ARRAY
+0      6 M| CLOSE TEST_ARRAY;                                                              | 9    TEST_ARRAY

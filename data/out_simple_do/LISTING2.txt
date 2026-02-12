@@ -1,0 +1,11 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M| TEST_SIMPLE_DO:                                                                | 1    
+0      1 M| PROGRAM;                                                                       | 2    TEST_SIMPLE_DO
+0      1 M|    DECLARE INTEGER, X INITIAL(1), Y INITIAL(2);                                | 3    TEST_SIMPLE_DO
+0      2 M|    DO;                                                                         | 4    TEST_SIMPLE_DO
+0      3 M|       X = X + Y;                                                               | 5    TEST_SIMPLE_DO
+0      4 M|       Y = X - Y;                                                               | 6    TEST_SIMPLE_DO
+0      5 M|       X = X - Y;                                                               | 7    TEST_SIMPLE_DO
+0      6 M|    END;                                                                        | 8    TEST_SIMPLE_DO
+0      7 M|    WRITE(6) 'X=', X, ' Y=', Y;                                                 | 9    TEST_SIMPLE_DO
+0      8 M| CLOSE TEST_SIMPLE_DO;                                                          | 10   TEST_SIMPLE_DO

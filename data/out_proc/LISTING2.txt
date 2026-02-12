@@ -1,0 +1,16 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M|                                                                                | 1    
+0      1 M|  TEST_PROC:                                                                    | 2    
+0      1 M|  PROGRAM;                                                                      | 3    TEST_PROC
+0      1 M|     DECLARE INTEGER, X, Y;                                                     | 4    TEST_PROC
+0      2 M|                                                                                | 5    TEST_PROC
+0      2 M|     ADD_ONE:                                                                   | 6    TEST_PROC
+0      3 M|     FUNCTION(N) INTEGER;                                                       | 7    ADD_ONE
+0      3 M|        DECLARE INTEGER, N;                                                     | 8    ADD_ONE
+0      4 M|        RETURN N + 1;                                                           | 9    ADD_ONE
+0      5 M|     CLOSE ADD_ONE;                                                             | 10   ADD_ONE
+0      6 M|                                                                                | 11   ADD_ONE
+0      6 M|     X = 5;                                                                     | 12   TEST_PROC
+0      7 M|     Y = ADD_ONE(X);                                                            | 13   TEST_PROC
+0      8 M|     WRITE(6) 'Y=', Y;                                                          | 14   TEST_PROC
+0      9 M|  CLOSE TEST_PROC;                                                              | 15   TEST_PROC

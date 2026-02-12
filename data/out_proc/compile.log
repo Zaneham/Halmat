@@ -1,0 +1,154 @@
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 1
+
+
+   HAL/S COMPILER PHASE 1 -- VERSION OF JUNE 8, 2024.  CLOCK TIME = 21:14:0.00.
+
+
+TODAY IS FEBRUARY 12, 2026.  CLOCK TIME = 16:11:25.48.
+ 
+ PARM FIELD: SRN,LISTING2,HALMAT,NOTABLES
+
+
+ COMPLETE LIST OF COMPILE-TIME OPTIONS IN EFFECT
+
+
+       *** TYPE 1 OPTIONS ***
+ 
+        NOADDRS
+        NODECK
+        NODUMP
+          HALMAT
+        NOHIGHOPT
+          LFXI
+        NOLIST
+          LISTING2
+          MICROCODE
+        NOREGOPT
+        NOSDL
+        NOSREF
+          SRN
+        NOTABDMP
+        NOTABLES
+        NOTABLST
+        NOTEMPLATE
+        NOVARSYM
+          ZCON
+
+
+       *** TYPE 2 OPTIONS ***
+ 
+       BLOCKSUM = 400
+       CARDTYPE = 
+       COMPUNIT = 0
+            DSR = 1
+      LABELSIZE = 1200
+         LINECT = 59
+     LITSTRINGS = 2000
+      MACROSIZE = 500
+           MFID = 
+          PAGES = 2500
+        SYMBOLS = 200
+          TITLE = 
+       XREFSIZE = 2000
+ 
+
+ *** NO LANGUAGE SUBSET IN EFFECT ***
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 2
+   SRN STMT                                                                  SOURCE                                                                  REVISION
+
+
+
+          1 M| TEST_PROC:                                                                                          |TEST_PROC
+          1 M| PROGRAM;                                                                                            |TEST_PROC
+          2 M|   DECLARE INTEGER,                                                                                  |TEST_PROC
+          2 M|             X, Y;                                                                                   |TEST_PROC
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 3
+   SRN STMT                                                  SOURCE                                                  CURRENT SCOPE
+
+          3 M| ADD_ONE:                                                                                            |ADD_ONE
+          3 M| FUNCTION(N) INTEGER;                                                                                |ADD_ONE
+          4 M|   DECLARE INTEGER, N;                                                                               |ADD_ONE
+          5 M|   RETURN N + 1;                                                                                     |ADD_ONE
+          6 M| CLOSE ADD_ONE;                                                                                      |ADD_ONE
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 4
+   SRN STMT                                                  SOURCE                                                  CURRENT SCOPE
+
+          7 M|   X = 5;                                                                                            |TEST_PROC
+          8 M|   Y = ADD_ONE(X);                                                                                   |TEST_PROC
+          9 M|   WRITE(6) 'Y=', Y;                                                                                 |TEST_PROC
+         10 M| CLOSE TEST_PROC;                                                                                    |TEST_PROC
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 5
+
+
+
+**** C O M P I L A T I O N   L A Y O U T ****
+
+ TEST_PROC: PROGRAM;  
+
+    ADD_ONE: FUNCTION; 
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 6
+
+
+
+S Y M B O L  &  C R O S S   R E F E R E N C E   T A B L E   L I S T I N G :
+
+         (CROSS REFERENCE FLAG KEY:  4 = ASSIGNMENT, 2 = REFERENCE, 1 = SUBSCRIPT USE, 0 = DEFINITION)
+
+ DCL  NAME              TYPE                          ATTRIBUTES & CROSS REFERENCE
+ 
+   3  ADD_ONE     INTEGER FUNCTION                   SINGLE    XREF: 0 0003  2 0008  
+   3  N           INTEGER                            SINGLE, ALIGNED, INPUT-PARM       XREF: 0 0003  0 0004  2 0005  
+   1  TEST_PROC   PROGRAM                              XREF: 0 0001  
+   2  X           INTEGER                            SINGLE, ALIGNED, STATIC   XREF: 0 0002  4 0007  2 0008  
+   2  Y           INTEGER                            SINGLE, ALIGNED, STATIC   XREF: 0 0002  4 0008  2 0009  
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:11:25.48     PAGE 7
+
+
+       OPTIONAL TABLE SIZES
+
+NAME       REQUESTED    USED
+^^^^       ^^^^^^^^^    ^^^^
+ 
+LITSTRINGS      2000       3
+SYMBOLS          200       5
+MACROSIZE        500       0
+XREFSIZE        2000      12
+BLOCKSUM         400       0
+
+
+CALLS TO SCAN        = 55
+CALLS TO IDENTIFY    = 14
+NUMBER OF REDUCTIONS = 145
+MAX STACK SIZE       = 8
+MAX IND. STACK SIZE  = 5
+END IND. STACK SIZE  = 1
+END ARRAY STACK SIZE = 0
+MAX EXT_ARRAY INDEX  = 1
+STATEMENT COUNT      = 10
+MINOR COMPACTIFIES   = 0
+MAJOR COMPACTIFIES   = 0
+REALLOCATIONS        = 0
+MAX NESTING DEPTH    = 2
+
+
+END OF HAL/S PHASE 1, FEBRUARY 12, 2026.  CLOCK TIME = 16:11:25.50.
+
+15 CARDS WERE PROCESSED.
+NO ERRORS WERE DETECTED DURING PHASE 1 .
+
+
+
+
+TOTAL CPU TIME FOR PHASE 1      0:0:0.02.
+CPU TIME FOR PHASE 1 SET UP     0:0:0.02.
+CPU TIME FOR PHASE 1 PROCESSING 0:0:0.00.
+CPU TIME FOR PHASE 1 CLEAN UP   0:0:0.00.
+

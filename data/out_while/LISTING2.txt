@@ -1,0 +1,14 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M|                                                                                | 1    
+0      1 M|  TEST_WHILE:                                                                   | 2    
+0      1 M|  PROGRAM;                                                                      | 3    TEST_WHILE
+0      1 M|     DECLARE INTEGER, I INITIAL(0), J INITIAL(10), TOTAL INITIAL(0);            | 4    TEST_WHILE
+0      2 M|     DO WHILE I < 10;                                                           | 5    TEST_WHILE
+0      3 M|        TOTAL = TOTAL + I;                                                      | 6    TEST_WHILE
+0      4 M|        I = I + 1;                                                              | 7    TEST_WHILE
+0      5 M|     END;                                                                       | 8    TEST_WHILE
+0      6 M|     DO UNTIL J = 0;                                                            | 9    TEST_WHILE
+0      7 M|        J = J - 1;                                                              | 10   TEST_WHILE
+0      8 M|     END;                                                                       | 11   TEST_WHILE
+0      9 M|     WRITE(6) 'TOTAL=', TOTAL;                                                  | 12   TEST_WHILE
+0     10 M|  CLOSE TEST_WHILE;                                                             | 13   TEST_WHILE

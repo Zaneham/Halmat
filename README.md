@@ -66,6 +66,7 @@ HAL/S source line that produced it.
 HALMAT-SPEC.md          Full instruction set reference (~4700 lines, 180 opcodes,
                         7 verified control flow patterns)
 
+emu/                    yaHALMAT - HALMAT emulator (C99)
 disasm/main.ml          Binary HALMAT disassembler (OCaml)
 patterns/main.ml        Control flow pattern analyser - walks HALMAT binary and
                         identifies nested FOR/IF/WHILE/CASE/DO/IO/call groups
@@ -79,6 +80,52 @@ data/
   test_*.hal            HAL/S test programs for pattern verification
   out_*/halmat.bin      Compiled HALMAT binary from each test program
 ```
+
+## Emulator
+
+yaHALMAT executes HALMAT directly - no AP-101 CPU emulator, no object code
+generation. It loads the compiler's binary output, decodes the 32-bit word
+stream, and interprets it. Integer, scalar, vector, and matrix arithmetic all
+work. Control flow (IF/ELSE, WHILE, UNTIL, FOR, CASE, nested combinations),
+function calls with argument passing and return values, character and bit
+string operations, type conversions, and WRITE output all work.
+
+### Build
+
+```
+cd emu
+make
+```
+
+Requires gcc and libc/libm. C99, no other dependencies.
+
+### Usage
+
+```
+yaHALMAT data/out_simple_do/halmat.bin       # run a program
+yaHALMAT --disasm data/out_simple_do/halmat.bin   # disassemble only
+yaHALMAT --trace data/out_simple_do/halmat.bin    # print each instruction
+yaHALMAT --debug data/out_simple_do/halmat.bin    # interactive debugger
+```
+
+The literal table (`litfile.bin`) and character strings (from the HAL/S
+source) are loaded automatically when found alongside the HALMAT binary.
+
+### Tests
+
+All 9 test programs execute and produce correct output:
+
+| Test | Covers | Output |
+|------|--------|--------|
+| simple_do | Integer assign, swap | `X= 2 Y= 1` |
+| ifelse | IF/ELSE, character WRITE | `C IS FIVE` / `DONE` |
+| while | DO WHILE, scalar accumulation | `TOTAL= 45` |
+| discrete_for | DO FOR with discrete values | `RESULT= 63` |
+| case | DO CASE | `RESULT= 30` |
+| nested | Nested FOR loops | `K= 150` |
+| proc | Function call, return value | `Y= 6` |
+| array | Array subscripting | (no output, no crash) |
+| matrix | Matrix operations | (no output, no crash) |
 
 ## The Instruction Set
 

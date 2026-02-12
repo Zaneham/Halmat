@@ -1,0 +1,12 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M|                                                                                | 1    
+0      1 M|  TEST_CASE:                                                                    | 2    
+0      1 M|  PROGRAM;                                                                      | 3    TEST_CASE
+0      1 M|     DECLARE INTEGER, SEL INITIAL(2), RESULT;                                   | 4    TEST_CASE
+0      2 M|     DO CASE SEL;                                                               | 5    TEST_CASE
+0      3 M|        RESULT = 10;                                                            | 6    TEST_CASE
+0      4 M|        RESULT = 20;                                                            | 7    TEST_CASE
+0      5 M|        RESULT = 30;                                                            | 8    TEST_CASE
+0      6 M|     END;                                                                       | 9    TEST_CASE
+0      7 M|     WRITE(6) 'RESULT=', RESULT;                                                | 10   TEST_CASE
+0      8 M|  CLOSE TEST_CASE;                                                              | 11   TEST_CASE

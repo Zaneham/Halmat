@@ -1,0 +1,13 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M|                                                                                | 1    
+0      1 M|  TEST_IFELSE:                                                                  | 2    
+0      1 M|  PROGRAM;                                                                      | 3    TEST_IFELSE
+0      1 M|     DECLARE INTEGER, A INITIAL(5), B INITIAL(3), C;                            | 4    TEST_IFELSE
+0      2 M|     IF A > B THEN                                                              | 5    TEST_IFELSE
+0      3 M|        C = A;                                                                  | 6    TEST_IFELSE
+0      4 M|     ELSE                                                                       | 7    TEST_IFELSE
+0      4 M|        C = B;                                                                  | 8    TEST_IFELSE
+0      5 M|     IF C = 5 THEN                                                              | 9    TEST_IFELSE
+0      6 M|        WRITE(6) 'C IS FIVE';                                                   | 10   TEST_IFELSE
+0      7 M|     WRITE(6) 'DONE';                                                           | 11   TEST_IFELSE
+0      8 M|  CLOSE TEST_IFELSE;                                                            | 12   TEST_IFELSE

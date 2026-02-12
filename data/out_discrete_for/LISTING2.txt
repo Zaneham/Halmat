@@ -1,0 +1,9 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M| TEST_DISCRETE:                                                                 | 1    
+0      1 M| PROGRAM;                                                                       | 2    TEST_DISCRETE
+0      1 M|    DECLARE INTEGER, I, RESULT INITIAL(0);                                      | 3    TEST_DISCRETE
+0      2 M|    DO FOR I = 3, 7, 11, 42;                                                    | 4    TEST_DISCRETE
+0      3 M|       RESULT = RESULT + I;                                                     | 5    TEST_DISCRETE
+0      4 M|    END;                                                                        | 6    TEST_DISCRETE
+0      5 M|    WRITE(6) 'RESULT=', RESULT;                                                 | 7    TEST_DISCRETE
+0      6 M| CLOSE TEST_DISCRETE;                                                           | 8    TEST_DISCRETE

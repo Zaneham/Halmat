@@ -1,0 +1,143 @@
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:32:14.78     PAGE 1
+
+
+   HAL/S COMPILER PHASE 1 -- VERSION OF JUNE 8, 2024.  CLOCK TIME = 21:14:0.00.
+
+
+TODAY IS FEBRUARY 12, 2026.  CLOCK TIME = 16:32:14.78.
+ 
+ PARM FIELD: SRN,LISTING2,HALMAT,NOTABLES
+
+
+ COMPLETE LIST OF COMPILE-TIME OPTIONS IN EFFECT
+
+
+       *** TYPE 1 OPTIONS ***
+ 
+        NOADDRS
+        NODECK
+        NODUMP
+          HALMAT
+        NOHIGHOPT
+          LFXI
+        NOLIST
+          LISTING2
+          MICROCODE
+        NOREGOPT
+        NOSDL
+        NOSREF
+          SRN
+        NOTABDMP
+        NOTABLES
+        NOTABLST
+        NOTEMPLATE
+        NOVARSYM
+          ZCON
+
+
+       *** TYPE 2 OPTIONS ***
+ 
+       BLOCKSUM = 400
+       CARDTYPE = 
+       COMPUNIT = 0
+            DSR = 1
+      LABELSIZE = 1200
+         LINECT = 59
+     LITSTRINGS = 2000
+      MACROSIZE = 500
+           MFID = 
+          PAGES = 2500
+        SYMBOLS = 200
+          TITLE = 
+       XREFSIZE = 2000
+ 
+
+ *** NO LANGUAGE SUBSET IN EFFECT ***
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:32:14.78     PAGE 2
+   SRN STMT                                                                  SOURCE                                                                  REVISION
+
+
+
+          1 M| TEST_SIMPLE_DO:                                                                                     |TEST_SIMPLE_DO
+          1 M| PROGRAM;                                                                                            |TEST_SIMPLE_DO
+          2 M|   DECLARE INTEGER,                                                                                  |TEST_SIMPLE_DO
+          2 M|             X INITIAL(1),                                                                           |TEST_SIMPLE_DO
+          2 M|             Y INITIAL(2);                                                                           |TEST_SIMPLE_DO
+          3 M|   DO;                                                                                               |TEST_SIMPLE_DO
+          4 M| 1   X = X + Y;                                                                                      |TEST_SIMPLE_DO
+          5 M| 1   Y = X - Y;                                                                                      |TEST_SIMPLE_DO
+          6 M| 1   X = X - Y;                                                                                      |TEST_SIMPLE_DO
+          7 M|   END;                                                                                              |ST#3
+          8 M|   WRITE(6) 'X=', X, ' Y=', Y;                                                                       |TEST_SIMPLE_DO
+          9 M| CLOSE TEST_SIMPLE_DO;                                                                               |TEST_SIMPLE_DO
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:32:14.78     PAGE 3
+
+
+
+**** C O M P I L A T I O N   L A Y O U T ****
+
+ TEST_SIMPLE_DO: PROGRAM;  
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:32:14.78     PAGE 4
+
+
+
+S Y M B O L  &  C R O S S   R E F E R E N C E   T A B L E   L I S T I N G :
+
+         (CROSS REFERENCE FLAG KEY:  4 = ASSIGNMENT, 2 = REFERENCE, 1 = SUBSCRIPT USE, 0 = DEFINITION)
+
+ DCL  NAME                   TYPE                          ATTRIBUTES & CROSS REFERENCE
+ 
+   1  TEST_SIMPLE_DO   PROGRAM                              XREF: 0 0001  
+   2  X                INTEGER                            SINGLE, ALIGNED, STATIC, INITIAL  XREF: 0 0002  6 0004  2 0005  6 0006  
+                                                          2 0008  
+   2  Y                INTEGER                            SINGLE, ALIGNED, STATIC, INITIAL  XREF: 0 0002  2 0004  6 0005  2 0006  
+                                                          2 0008  
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+  HAL/S REL32V0                T I T A N  S Y S T E M S  C O R P .                 FEBRUARY 12, 2026    16:32:14.78     PAGE 5
+
+
+       OPTIONAL TABLE SIZES
+
+NAME       REQUESTED    USED
+^^^^       ^^^^^^^^^    ^^^^
+ 
+LITSTRINGS      2000       7
+SYMBOLS          200       3
+MACROSIZE        500       0
+XREFSIZE        2000      11
+BLOCKSUM         400       0
+
+
+CALLS TO SCAN        = 57
+CALLS TO IDENTIFY    = 15
+NUMBER OF REDUCTIONS = 181
+MAX STACK SIZE       = 9
+MAX IND. STACK SIZE  = 5
+END IND. STACK SIZE  = 1
+END ARRAY STACK SIZE = 0
+MAX EXT_ARRAY INDEX  = 1
+STATEMENT COUNT      = 9
+MINOR COMPACTIFIES   = 0
+MAJOR COMPACTIFIES   = 0
+REALLOCATIONS        = 0
+MAX NESTING DEPTH    = 1
+
+
+END OF HAL/S PHASE 1, FEBRUARY 12, 2026.  CLOCK TIME = 16:32:14.80.
+
+10 CARDS WERE PROCESSED.
+NO ERRORS WERE DETECTED DURING PHASE 1 .
+
+
+
+
+TOTAL CPU TIME FOR PHASE 1      0:0:0.02.
+CPU TIME FOR PHASE 1 SET UP     0:0:0.02.
+CPU TIME FOR PHASE 1 PROCESSING 0:0:0.00.
+CPU TIME FOR PHASE 1 CLEAN UP   0:0:0.00.
+

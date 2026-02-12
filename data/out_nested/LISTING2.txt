@@ -1,0 +1,15 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-      1 M| TEST_NESTED:                                                                   | 1    
+0      1 M| PROGRAM;                                                                       | 2    TEST_NESTED
+0      1 M|    DECLARE INTEGER, I, J INITIAL(0), K INITIAL(0);                             | 3    TEST_NESTED
+0      2 M|    DO WHILE J < 100;                                                           | 4    TEST_NESTED
+0      3 M|       DO FOR I = 1 TO 10;                                                      | 5    TEST_NESTED
+0      4 M|          IF I > 5 THEN                                                         | 6    TEST_NESTED
+0      5 M|             K = K + 1;                                                         | 7    TEST_NESTED
+0      6 M|          ELSE                                                                  | 8    TEST_NESTED
+0      6 M|             K = K + 2;                                                         | 9    TEST_NESTED
+0      7 M|       END;                                                                     | 10   TEST_NESTED
+0      8 M|       J = J + 10;                                                              | 11   TEST_NESTED
+0      9 M|    END;                                                                        | 12   TEST_NESTED
+0     10 M|    WRITE(6) 'K=', K;                                                           | 13   TEST_NESTED
+0     11 M| CLOSE TEST_NESTED;                                                             | 14   TEST_NESTED
