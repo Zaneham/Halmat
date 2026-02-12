@@ -17,10 +17,14 @@ NASA technical report anyone can find. The only prior attempt is an ~850-line
 sketch by Ron Burkey of the Virtual AGC project, which covers two of the
 nine instruction classes and marks the remaining seven as "TODO".
 
-This repository contains the complete HALMAT instruction set -all 180
-opcodes across all 9 classes -reconstructed from the compiler's own source
-code, reconstructed by parsing every file, tracing every reference, and
-verifying against actual binary output. The spec is ~3800 lines.
+This repository contains the complete HALMAT instruction set - all 180
+opcodes across all 9 classes - reconstructed from the compiler's own source
+code, by parsing every file, tracing every reference, and verifying against
+actual binary output. The spec also documents the control flow patterns:
+the structured groups of opcodes that implement FOR loops, IF/ELSE, CASE
+statements, WHILE/UNTIL loops, I/O operations, function calls, and array
+subscripting. Every pattern is verified against compiled HALMAT binary
+from real HAL/S programs. The spec is ~4700 lines.
 
 ## How This Happened
 
@@ -59,7 +63,12 @@ HAL/S source line that produced it.
 ## Contents
 
 ```
-HALMAT-SPEC.md          Full instruction set reference (~3800 lines, 180 opcodes)
+HALMAT-SPEC.md          Full instruction set reference (~4700 lines, 180 opcodes,
+                        7 verified control flow patterns)
+
+disasm/main.ml          Binary HALMAT disassembler (OCaml)
+patterns/main.ml        Control flow pattern analyser - walks HALMAT binary and
+                        identifies nested FOR/IF/WHILE/CASE/DO/IO/call groups
 
 data/
   halmat_disasm.txt     Annotated disassembly of HELLO.hal
@@ -67,6 +76,8 @@ data/
   auxmat_disasm.txt     Auxiliary matrix output
   halmat_opcodes.txt    Opcode table (hex values, classes, names)
   xref.txt              Cross-reference: 268 opcode uses across 630 source files
+  test_*.hal            HAL/S test programs for pattern verification
+  out_*/halmat.bin      Compiled HALMAT binary from each test program
 ```
 
 ## The Instruction Set
@@ -169,6 +180,15 @@ memory. The disassembler reads all of it.
 
 5. **Merge** all evidence with Burkey's existing documentation into a
    unified reference.
+
+6. **Compile** targeted HAL/S test programs through the Python PASS1 port
+   (one for each control flow construct: IF/ELSE, DO WHILE, DO UNTIL,
+   DO CASE, discrete FOR, simple DO, function calls, array subscripts,
+   nested combinations). Disassemble the binary output. Run it through
+   a purpose-built pattern analyser that walks the HALMAT stream and
+   identifies the grouped opcodes. Verify every claim in the spec against
+   the actual compiled binary - TAG values, operand orders, flow label
+   allocation, sentinel markers, all of it.
 
 ## Prior Art
 

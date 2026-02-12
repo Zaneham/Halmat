@@ -1,0 +1,13 @@
+
+  TEST_WHILE:
+  PROGRAM;
+     DECLARE INTEGER, I INITIAL(0), J INITIAL(10), TOTAL INITIAL(0);
+     DO WHILE I < 10;
+        TOTAL = TOTAL + I;
+        I = I + 1;
+     END;
+     DO UNTIL J = 0;
+        J = J - 1;
+     END;
+     WRITE(6) 'TOTAL=', TOTAL;
+  CLOSE TEST_WHILE;

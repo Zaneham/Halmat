@@ -1,0 +1,14 @@
+ TEST_NESTED:
+ PROGRAM;
+    DECLARE INTEGER, I, J INITIAL(0), K INITIAL(0);
+    DO WHILE J < 100;
+       DO FOR I = 1 TO 10;
+          IF I > 5 THEN
+             K = K + 1;
+          ELSE
+             K = K + 2;
+       END;
+       J = J + 10;
+    END;
+    WRITE(6) 'K=', K;
+ CLOSE TEST_NESTED;

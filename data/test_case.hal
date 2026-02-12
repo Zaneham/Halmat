@@ -1,0 +1,11 @@
+
+  TEST_CASE:
+  PROGRAM;
+     DECLARE INTEGER, SEL INITIAL(2), RESULT;
+     DO CASE SEL;
+        RESULT = 10;
+        RESULT = 20;
+        RESULT = 30;
+     END;
+     WRITE(6) 'RESULT=', RESULT;
+  CLOSE TEST_CASE;

@@ -1,0 +1,10 @@
+ TEST_SIMPLE_DO:
+ PROGRAM;
+    DECLARE INTEGER, X INITIAL(1), Y INITIAL(2);
+    DO;
+       X = X + Y;
+       Y = X - Y;
+       X = X - Y;
+    END;
+    WRITE(6) 'X=', X, ' Y=', Y;
+ CLOSE TEST_SIMPLE_DO;

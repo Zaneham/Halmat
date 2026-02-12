@@ -1,0 +1,12 @@
+
+  TEST_IFELSE:
+  PROGRAM;
+     DECLARE INTEGER, A INITIAL(5), B INITIAL(3), C;
+     IF A > B THEN
+        C = A;
+     ELSE
+        C = B;
+     IF C = 5 THEN
+        WRITE(6) 'C IS FIVE';
+     WRITE(6) 'DONE';
+  CLOSE TEST_IFELSE;

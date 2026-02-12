@@ -1,0 +1,15 @@
+
+  TEST_PROC:
+  PROGRAM;
+     DECLARE INTEGER, X, Y;
+
+     ADD_ONE:
+     FUNCTION(N) INTEGER;
+        DECLARE INTEGER, N;
+        RETURN N + 1;
+     CLOSE ADD_ONE;
+
+     X = 5;
+     Y = ADD_ONE(X);
+     WRITE(6) 'Y=', Y;
+  CLOSE TEST_PROC;

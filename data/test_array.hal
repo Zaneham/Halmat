@@ -1,0 +1,9 @@
+ TEST_ARRAY:
+ PROGRAM;
+    DECLARE ARR ARRAY(5) SCALAR;
+    DECLARE INTEGER, I;
+    DO FOR I = 1 TO 5;
+M      ARR  = I;
+S         I
+    END;
+ CLOSE TEST_ARRAY;
