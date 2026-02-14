@@ -18,9 +18,9 @@ static const uint8_t ebcdic_to_ascii[256] = {
     0xEC,0xDF,0x21,0x24,0x2A,0x29,0x3B,0xAC, /* 5A: ! $ * ) ; */
     0x2D,0x2F,0xC2,0xC4,0xC0,0xC1,0xC3,0xC5, /* 60: - / */
     0xC7,0xD1,0xA6,0x2C,0x25,0x5F,0x3E,0x3F, /* 6B: , % _ > ? */
-    0xD8,0xC9,0xCA,0xCB,0xC8,0xCD,0xCE,0xCF,
+    0xF8,0xC9,0xCA,0xCB,0xC8,0xCD,0xCE,0xCF, /* 70: 0xF8 = ø */
     0xCC,0x60,0x3A,0x23,0x40,0x27,0x3D,0x22, /* 79: ` : # @ ' = " */
-    0xD8,0x61,0x62,0x63,0x64,0x65,0x66,0x67, /* 81-89: a-i */
+    0xD8,0x61,0x62,0x63,0x64,0x65,0x66,0x67, /* 80: 0xD8 = Ø  81-89: a-i */
     0x68,0x69,0xAB,0xBB,0xF0,0xFD,0xFE,0xB1,
     0xB0,0x6A,0x6B,0x6C,0x6D,0x6E,0x6F,0x70, /* 91-99: j-r */
     0x71,0x72,0xAA,0xBA,0xE6,0xB8,0xC6,0xA4,
@@ -49,13 +49,25 @@ static FILE *unit_fp(halmat_t *H, int unit, const char *mode)
     if (unit < 0 || unit >= HALMAT_MAX_UNITS)
         return NULL;
     halmat_unit_t *u = &H->units[unit];
-    if (u->fp)
+    if (u->fp) {
+        /* Reopen if mode changed (e.g. "r" -> "w") */
+        if (u->is_open && u->mode[0] && u->mode[0] != mode[0]) {
+            fclose(u->fp);
+            u->fp = fopen(u->path, mode);
+            if (u->fp)
+                snprintf(u->mode, sizeof(u->mode), "%s", mode);
+            else
+                u->is_open = 0;
+        }
         return u->fp;
+    }
     /* Lazy open from stored path */
     if (u->path[0]) {
         u->fp = fopen(u->path, mode);
-        if (u->fp)
+        if (u->fp) {
             u->is_open = 1;
+            snprintf(u->mode, sizeof(u->mode), "%s", mode);
+        }
         return u->fp;
     }
     /* Defaults: 5=stdin, 6=stdout */
@@ -85,10 +97,14 @@ static void write_char(halmat_t *H, FILE *fp, const char *data, int len)
 {
     if (H->translate_ebcdic) {
         char buf[256];
-        if (len > 255) len = 255;
-        memcpy(buf, data, len);
-        translate_buf(buf, len, ebcdic_to_ascii);
-        fprintf(fp, "%.*s", len, buf);
+        while (len > 0) {
+            int chunk = (len > 256) ? 256 : len;
+            memcpy(buf, data, chunk);
+            translate_buf(buf, chunk, ebcdic_to_ascii);
+            fprintf(fp, "%.*s", chunk, buf);
+            data += chunk;
+            len -= chunk;
+        }
     } else {
         fprintf(fp, "%.*s", len, data);
     }

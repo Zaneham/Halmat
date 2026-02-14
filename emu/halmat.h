@@ -241,6 +241,7 @@ typedef struct {
     FILE    *fp;
     int      is_open;       /* 1 = we fopened it (need fclose) */
     char     path[512];     /* empty = not configured */
+    char     mode[4];       /* mode used to open (for lazy reopen) */
 } halmat_unit_t;
 
 typedef struct {

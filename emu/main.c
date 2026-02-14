@@ -42,7 +42,13 @@ int main(int argc, char *argv[])
                 fprintf(stderr, "--unit requires N=PATH (e.g. --unit 6=output.txt)\n");
                 return 1;
             }
-            int unit_num = atoi(argv[i]);
+            char *endptr;
+            long unit_long = strtol(argv[i], &endptr, 10);
+            if (endptr == argv[i] || endptr != eq) {
+                fprintf(stderr, "--unit: invalid unit number in '%s'\n", argv[i]);
+                return 1;
+            }
+            int unit_num = (int)unit_long;
             const char *path = eq + 1;
             if (unit_num < 0 || unit_num >= HALMAT_MAX_UNITS) {
                 fprintf(stderr, "Unit number must be 0-%d\n", HALMAT_MAX_UNITS - 1);
