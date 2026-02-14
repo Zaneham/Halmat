@@ -7,14 +7,16 @@ static halmat_t H;
 static void usage(const char *prog)
 {
     fprintf(stderr,
-        "yaHALMAT — HALMAT Emulator\n"
+        "yaHALMAT - HALMAT Emulator\n"
         "Usage: %s [options] halmat.bin\n"
         "\n"
         "Options:\n"
-        "  --disasm     Disassemble only (no execution)\n"
-        "  --litfile F  Load literal table (resolves LIT references)\n"
-        "  --debug      Enter debugger mode\n"
-        "  --trace      Print each instruction as it executes\n"
+        "  --disasm       Disassemble only (no execution)\n"
+        "  --litfile F    Load literal table (resolves LIT references)\n"
+        "  --unit N=PATH  Map logical unit N to file (stdin/stdout/stderr for std streams)\n"
+        "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
+        "  --debug        Enter debugger mode\n"
+        "  --trace        Print each instruction as it executes\n"
         "\n", prog);
 }
 
@@ -26,11 +28,42 @@ int main(int argc, char *argv[])
     int debug = 0;
     int trace = 0;
 
+    halmat_init(&H);
+
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--disasm") == 0) {
             disasm_only = 1;
         } else if (strcmp(argv[i], "--litfile") == 0 && i + 1 < argc) {
             litfile = argv[++i];
+        } else if (strcmp(argv[i], "--unit") == 0 && i + 1 < argc) {
+            i++;
+            char *eq = strchr(argv[i], '=');
+            if (!eq) {
+                fprintf(stderr, "--unit requires N=PATH (e.g. --unit 6=output.txt)\n");
+                return 1;
+            }
+            char *endptr;
+            long unit_long = strtol(argv[i], &endptr, 10);
+            if (endptr == argv[i] || endptr != eq) {
+                fprintf(stderr, "--unit: invalid unit number in '%s'\n", argv[i]);
+                return 1;
+            }
+            int unit_num = (int)unit_long;
+            const char *path = eq + 1;
+            if (unit_num < 0 || unit_num >= HALMAT_MAX_UNITS) {
+                fprintf(stderr, "Unit number must be 0-%d\n", HALMAT_MAX_UNITS - 1);
+                return 1;
+            }
+            if (strcmp(path, "stdin") == 0)
+                H.units[unit_num].fp = stdin;
+            else if (strcmp(path, "stdout") == 0)
+                H.units[unit_num].fp = stdout;
+            else if (strcmp(path, "stderr") == 0)
+                H.units[unit_num].fp = stderr;
+            else
+                snprintf(H.units[unit_num].path, sizeof(H.units[unit_num].path), "%s", path);
+        } else if (strcmp(argv[i], "--ebcdic") == 0) {
+            H.translate_ebcdic = 1;
         } else if (strcmp(argv[i], "--debug") == 0) {
             debug = 1;
         } else if (strcmp(argv[i], "--trace") == 0) {
@@ -51,8 +84,6 @@ int main(int argc, char *argv[])
         usage(argv[0]);
         return 1;
     }
-
-    halmat_init(&H);
 
     if (halmat_load(&H, halmat_file) != 0) {
         fprintf(stderr, "Failed to load %s\n", halmat_file);

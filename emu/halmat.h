@@ -19,6 +19,7 @@
 #define HALMAT_MAX_LOOPS    64
 #define HALMAT_DATA_SIZE    (1 << 20)   /* 1 MB data segment */
 #define HALMAT_LIT_STR_POOL 16384       /* character literal string pool */
+#define HALMAT_MAX_UNITS    16
 
 /* Operator word: [TAG:8][NUMOP:8][CLASS:4][OPCODE:8][COPT:3][0:1] */
 #define HALMAT_IS_OP(w)       (((w) & 1) == 0)
@@ -237,6 +238,13 @@
 #define VAC_SLOT(addr) ((addr) & (HALMAT_MAX_VAC - 1))
 
 typedef struct {
+    FILE    *fp;
+    int      is_open;       /* 1 = we fopened it (need fclose) */
+    char     path[512];     /* empty = not configured */
+    char     mode[4];       /* mode used to open (for lazy reopen) */
+} halmat_unit_t;
+
+typedef struct {
     uint32_t    code[HALMAT_MAX_CODE];
     uint32_t    code_len;
     uint32_t    num_blocks;
@@ -270,6 +278,9 @@ typedef struct {
 
     uint32_t    flow[HALMAT_MAX_FLOW];      /* flow number → code offset */
     io_list_t   io;
+
+    halmat_unit_t units[HALMAT_MAX_UNITS];
+    int           translate_ebcdic;
 
     uint64_t    cycle_count;
     uint64_t    stmt_count;
