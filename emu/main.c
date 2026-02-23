@@ -13,6 +13,7 @@ static void usage(const char *prog)
         "Options:\n"
         "  --disasm       Disassemble only (no execution)\n"
         "  --litfile F    Load literal table (resolves LIT references)\n"
+        "  --common0 F    Load COMMON0.out.bin.gz memory image (for string literals)\n"
         "  --unit N=PATH  Map logical unit N to file (stdin/stdout/stderr for std streams)\n"
         "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
         "  --debug        Enter debugger mode\n"
@@ -24,6 +25,7 @@ int main(int argc, char *argv[])
 {
     const char *halmat_file = NULL;
     const char *litfile = NULL;
+    const char *common0 = NULL;
     int disasm_only = 0;
     int debug = 0;
     int trace = 0;
@@ -35,6 +37,8 @@ int main(int argc, char *argv[])
             disasm_only = 1;
         } else if (strcmp(argv[i], "--litfile") == 0 && i + 1 < argc) {
             litfile = argv[++i];
+        } else if (strcmp(argv[i], "--common0") == 0 && i + 1 < argc) {
+            common0 = argv[++i];
         } else if (strcmp(argv[i], "--unit") == 0 && i + 1 < argc) {
             i++;
             char *eq = strchr(argv[i], '=');
@@ -109,14 +113,33 @@ int main(int argc, char *argv[])
         halmat_load_litfile(&H, autolit); /* silent failure OK */
     }
 
-    {
+    if (common0) {
+        if (halmat_load_common0(&H, common0) != 0)
+            fprintf(stderr, "Warning: failed to load %s\n", common0);
+    } else {
+        char autoc0[512];
+        const char *sep3 = strrchr(halmat_file, '/');
+        const char *sep4 = strrchr(halmat_file, '\\');
+        if (sep4 && (!sep3 || sep4 > sep3)) sep3 = sep4;
+        if (sep3) {
+            int dirlen = (int)(sep3 - halmat_file + 1);
+            snprintf(autoc0, sizeof(autoc0), "%.*sCOMMON0.out.bin.gz",
+                     dirlen, halmat_file);
+        } else {
+            snprintf(autoc0, sizeof(autoc0), "COMMON0.out.bin.gz");
+        }
+        halmat_load_common0(&H, autoc0); /* silent failure OK */
+    }
+
+    if (!H.mem_image_loaded) {
         char autosrc[512];
         const char *sep3 = strrchr(halmat_file, '/');
         const char *sep4 = strrchr(halmat_file, '\\');
         if (sep4 && (!sep3 || sep4 > sep3)) sep3 = sep4;
         if (sep3) {
             int dirlen = (int)(sep3 - halmat_file + 1);
-            snprintf(autosrc, sizeof(autosrc), "%.*sSOURCECO.txt", dirlen, halmat_file);
+            snprintf(autosrc, sizeof(autosrc), "%.*sSOURCECO.txt",
+                     dirlen, halmat_file);
         } else {
             snprintf(autosrc, sizeof(autosrc), "SOURCECO.txt");
         }
@@ -178,6 +201,7 @@ int main(int argc, char *argv[])
     }
 
     halmat_io_shutdown(&H);
+    halmat_free_common0(&H);
 
     if (H.halted < 0) {
         fprintf(stderr, "yaHALMAT: execution error at PC=%u\n", H.pc);

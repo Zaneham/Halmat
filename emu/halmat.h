@@ -19,6 +19,7 @@
 #define HALMAT_MAX_LOOPS    64
 #define HALMAT_DATA_SIZE    (1 << 20)   /* 1 MB data segment */
 #define HALMAT_LIT_STR_POOL 16384       /* character literal string pool */
+#define HALMAT_MEM_SIZE     0x1000000   /* 16 MB compiler memory image */
 #define HALMAT_MAX_UNITS    16
 
 /* Operator word: [TAG:8][NUMOP:8][CLASS:4][OPCODE:8][COPT:3][0:1] */
@@ -282,6 +283,9 @@ typedef struct {
     halmat_unit_t units[HALMAT_MAX_UNITS];
     int           translate_ebcdic;
 
+    uint8_t      *mem_image;            /* compiler memory image from COMMON0 */
+    int           mem_image_loaded;     /* 1 = mem_image valid */
+
     uint64_t    cycle_count;
     uint64_t    stmt_count;
     uint32_t    current_stmt;               /* from SMRK TAG */
@@ -298,6 +302,8 @@ double ibm_double_to_double(uint32_t w_hi, uint32_t w_lo);
 int  halmat_load(halmat_t *H, const char *filename);
 int  halmat_load_litfile(halmat_t *H, const char *filename);
 int  halmat_load_strings(halmat_t *H, const char *source_file);
+int  halmat_load_common0(halmat_t *H, const char *filename);
+void halmat_free_common0(halmat_t *H);
 void halmat_build_flow_table(halmat_t *H);
 void halmat_init(halmat_t *H);
 
