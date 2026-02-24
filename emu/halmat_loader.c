@@ -1,4 +1,7 @@
 #include "halmat.h"
+#ifdef HAVE_ZLIB
+#include <zlib.h>
+#endif
 
 static uint32_t read_be32(FILE *fp)
 {
@@ -54,10 +57,7 @@ int halmat_load(halmat_t *H, const char *filename)
 int halmat_load_litfile(halmat_t *H, const char *filename)
 {
     FILE *fp = fopen(filename, "rb");
-    if (!fp) {
-        fprintf(stderr, "halmat_load_litfile: cannot open %s\n", filename);
-        return -1;
-    }
+    if (!fp) return -1;
 
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
@@ -240,37 +240,47 @@ static const uint8_t ebc2asc[256] = {
 
 int halmat_load_common0(halmat_t *H, const char *filename)
 {
-    FILE *fp = NULL;
-    int is_gz = 0;
     size_t flen = strlen(filename);
+    int is_gz = (flen > 3 && strcmp(filename + flen - 3, ".gz") == 0);
 
-    if (flen > 3 && strcmp(filename + flen - 3, ".gz") == 0)
-        is_gz = 1;
+    H->mem_image = (uint8_t *)malloc(HALMAT_MEM_SIZE);
+    if (!H->mem_image) return -1;
 
+#ifdef HAVE_ZLIB
+    if (is_gz) {
+        gzFile gz = gzopen(filename, "rb");
+        if (!gz) { free(H->mem_image); H->mem_image = NULL; return -1; }
+        int nread = gzread(gz, H->mem_image, HALMAT_MEM_SIZE);
+        gzclose(gz);
+        if (nread != HALMAT_MEM_SIZE) {
+            free(H->mem_image); H->mem_image = NULL; return -1;
+        }
+        H->mem_image_loaded = 1;
+        return 0;
+    }
+#else
     if (is_gz) {
         char cmd[600];
         snprintf(cmd, sizeof(cmd), "gzip -dc \"%s\" 2>/dev/null", filename);
-        fp = popen(cmd, "r");
-    } else {
-        fp = fopen(filename, "rb");
+        FILE *fp = popen(cmd, "r");
+        if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
+        size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
+        pclose(fp);
+        if (nread != HALMAT_MEM_SIZE) {
+            free(H->mem_image); H->mem_image = NULL; return -1;
+        }
+        H->mem_image_loaded = 1;
+        return 0;
     }
-    if (!fp) return -1;
+#endif
 
-    H->mem_image = (uint8_t *)malloc(HALMAT_MEM_SIZE);
-    if (!H->mem_image) {
-        if (is_gz) pclose(fp); else fclose(fp);
-        return -1;
-    }
-
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
     size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
-    if (is_gz) pclose(fp); else fclose(fp);
-
+    fclose(fp);
     if (nread != HALMAT_MEM_SIZE) {
-        free(H->mem_image);
-        H->mem_image = NULL;
-        return -1;
+        free(H->mem_image); H->mem_image = NULL; return -1;
     }
-
     H->mem_image_loaded = 1;
     return 0;
 }

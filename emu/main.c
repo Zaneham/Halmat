@@ -13,7 +13,7 @@ static void usage(const char *prog)
         "Options:\n"
         "  --disasm       Disassemble only (no execution)\n"
         "  --litfile F    Load literal table (resolves LIT references)\n"
-        "  --common0 F    Load COMMON0.out.bin.gz memory image (for string literals)\n"
+        "  --common F     Load COMMON memory image (.bin or .bin.gz)\n"
         "  --unit N=PATH  Map logical unit N to file (stdin/stdout/stderr for std streams)\n"
         "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
         "  --debug        Enter debugger mode\n"
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
             disasm_only = 1;
         } else if (strcmp(argv[i], "--litfile") == 0 && i + 1 < argc) {
             litfile = argv[++i];
-        } else if (strcmp(argv[i], "--common0") == 0 && i + 1 < argc) {
+        } else if ((strcmp(argv[i], "--common") == 0 || strcmp(argv[i], "--common0") == 0) && i + 1 < argc) {
             common0 = argv[++i];
         } else if (strcmp(argv[i], "--unit") == 0 && i + 1 < argc) {
             i++;
@@ -104,13 +104,17 @@ int main(int argc, char *argv[])
         const char *sep = strrchr(halmat_file, '/');
         const char *sep2 = strrchr(halmat_file, '\\');
         if (sep2 && (!sep || sep2 > sep)) sep = sep2;
-        if (sep) {
-            int dirlen = (int)(sep - halmat_file + 1);
-            snprintf(autolit, sizeof(autolit), "%.*slitfile.bin", dirlen, halmat_file);
-        } else {
-            snprintf(autolit, sizeof(autolit), "litfile.bin");
+        int dirlen = sep ? (int)(sep - halmat_file + 1) : 0;
+        static const char *litnames[] = {
+            "litfile0.bin", "litfile.bin", NULL
+        };
+        for (int li = 0; litnames[li]; li++) {
+            if (sep)
+                snprintf(autolit, sizeof(autolit), "%.*s%s", dirlen, halmat_file, litnames[li]);
+            else
+                snprintf(autolit, sizeof(autolit), "%s", litnames[li]);
+            if (halmat_load_litfile(&H, autolit) == 0) break;
         }
-        halmat_load_litfile(&H, autolit); /* silent failure OK */
     }
 
     if (common0) {
@@ -121,14 +125,17 @@ int main(int argc, char *argv[])
         const char *sep3 = strrchr(halmat_file, '/');
         const char *sep4 = strrchr(halmat_file, '\\');
         if (sep4 && (!sep3 || sep4 > sep3)) sep3 = sep4;
-        if (sep3) {
-            int dirlen = (int)(sep3 - halmat_file + 1);
-            snprintf(autoc0, sizeof(autoc0), "%.*sCOMMON0.out.bin.gz",
-                     dirlen, halmat_file);
-        } else {
-            snprintf(autoc0, sizeof(autoc0), "COMMON0.out.bin.gz");
+        int dl3 = sep3 ? (int)(sep3 - halmat_file + 1) : 0;
+        static const char *c0names[] = {
+            "COMMON0.out.bin.gz", "COMMON0.out.bin", NULL
+        };
+        for (int ci = 0; c0names[ci]; ci++) {
+            if (sep3)
+                snprintf(autoc0, sizeof(autoc0), "%.*s%s", dl3, halmat_file, c0names[ci]);
+            else
+                snprintf(autoc0, sizeof(autoc0), "%s", c0names[ci]);
+            if (halmat_load_common0(&H, autoc0) == 0) break;
         }
-        halmat_load_common0(&H, autoc0); /* silent failure OK */
     }
 
     if (!H.mem_image_loaded) {
