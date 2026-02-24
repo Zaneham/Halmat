@@ -2,6 +2,12 @@ CC = gcc
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -O2
 LDFLAGS = -lm
 
+ZLIB_CHECK := $(shell echo 'int main(){return 0;}' | $(CC) -xc - -lz -o /dev/null 2>/dev/null && echo yes)
+ifeq ($(ZLIB_CHECK),yes)
+CFLAGS += -DHAVE_ZLIB
+LDFLAGS += -lz
+endif
+
 SRCS = main.c halmat_engine.c halmat_loader.c halmat_float.c halmat_disasm.c \
        halmat_class0.c halmat_class1.c halmat_class2.c halmat_class34.c \
        halmat_class5.c halmat_class6.c halmat_class7.c halmat_class8.c \
