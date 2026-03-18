@@ -1,8 +1,10 @@
 #include "halmat.h"
 #include "halmat_io.h"
 #include "halmat_debug.h"
+#include "hm_abend.h"
 
 static halmat_t H;
+static hm_abctx_t abctx;
 
 static void usage(const char *prog)
 {
@@ -18,6 +20,7 @@ static void usage(const char *prog)
         "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
         "  --debug        Enter debugger mode\n"
         "  --trace        Print each instruction as it executes\n"
+        "  --dump         Print ABEND dump on runtime errors\n"
         "\n", prog);
 }
 
@@ -31,6 +34,8 @@ int main(int argc, char *argv[])
     int trace = 0;
 
     halmat_init(&H);
+    hm_ainit(&abctx);
+    abctx.hm = &H;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--disasm") == 0) {
@@ -72,6 +77,8 @@ int main(int argc, char *argv[])
             debug = 1;
         } else if (strcmp(argv[i], "--trace") == 0) {
             trace = 1;
+        } else if (strcmp(argv[i], "--dump") == 0) {
+            abctx.dump = 1;
         } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
             usage(argv[0]);
             return 0;
@@ -84,10 +91,9 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (!halmat_file) {
-        usage(argv[0]);
-        return 1;
-    }
+    if (!halmat_file)
+        halmat_file = "halmat.bin";
+    abctx.src = halmat_file;
 
     if (halmat_load(&H, halmat_file) != 0) {
         fprintf(stderr, "Failed to load %s\n", halmat_file);
@@ -211,7 +217,11 @@ int main(int argc, char *argv[])
     halmat_free_common0(&H);
 
     if (H.halted < 0) {
-        fprintf(stderr, "yaHALMAT: execution error at PC=%u\n", H.pc);
+        if (abctx.dump) {
+            hm_abend(&abctx, hm_etou(H.halted));
+        } else {
+            fprintf(stderr, "yaHALMAT: execution error at PC=%u\n", H.pc);
+        }
         return 1;
     }
 

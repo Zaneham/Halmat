@@ -1,0 +1,21 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-        C| / Adapted from PDF p. 85 of "Programming in HAL/S".                            | 1    
+0      1 M|                                                                                | 2    
+0      1 M|  FACTORIAL:                                                                    | 3    
+0      1 M|  PROGRAM;                                                                      | 4    FACTORIAL
+0      1 M|     DECLARE INTEGER,                                                           | 5    FACTORIAL
+0      2 M|             RESULT, N_MAX, I;                                                  | 6    FACTORIAL
+0      2 M|     DO WHILE TRUE;                                                             | 7    FACTORIAL
+0      3 M|             WRITE(6) 'Input a positive integer (0 to quit):';                  | 8    FACTORIAL
+0      4 M|             READ(5) N_MAX;                                                     | 9    FACTORIAL
+0      5 M|             IF N_MAX < 1 THEN EXIT;                                            | 10   FACTORIAL
+0      7 M|             RESULT = 1;                                                        | 11   FACTORIAL
+0      8 M|             DO FOR I = 2 TO N_MAX BY 1;                                        | 12   FACTORIAL
+0      9 M|                RESULT = I RESULT;                                              | 13   FACTORIAL
+0     10 M|             END;                                                               | 14   FACTORIAL
+0     11 M|             WRITE(6) 'FACTORIAL=', RESULT;                                     | 15   FACTORIAL
+0     12 M|     END;                                                                       | 16   FACTORIAL
+0        C|  %SVCI(0);                                                                     | 17   FACTORIAL
+0     14 Y|  %SVCI(0);                                                                     | 17   FACTORIAL
+      14 M|  CLOSE FACTORIAL;                                                              | 18   FACTORIAL
+0     14 M|                                                                                | 19   FACTORIAL

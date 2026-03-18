@@ -1,5 +1,6 @@
 #include "halmat.h"
 #include "halmat_io.h"
+#include <math.h>
 
 /* EBCDIC Code Page 037 -> ASCII.
  * IBM S/360 encoding used by the HAL/S-FC compiler. */
@@ -133,7 +134,7 @@ int halmat_io_write(halmat_t *H, int channel, halmat_val_t *args,
         }
         case 6: {
             int32_t v = (args[i].type == HTYPE_INTEGER)
-                        ? args[i].v.integer : (int32_t)args[i].v.scalar;
+                        ? args[i].v.integer : (int32_t)round(args[i].v.scalar);
             fprintf(fp, "%11d", v);
             break;
         }

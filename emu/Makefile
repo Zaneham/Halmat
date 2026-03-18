@@ -11,9 +11,9 @@ endif
 SRCS = main.c halmat_engine.c halmat_loader.c halmat_float.c halmat_disasm.c \
        halmat_class0.c halmat_class1.c halmat_class2.c halmat_class34.c \
        halmat_class5.c halmat_class6.c halmat_class7.c halmat_class8.c \
-       halmat_io.c halmat_debug.c
+       halmat_io.c halmat_debug.c hm_abend.c
 
-HDRS = halmat.h halmat_types.h halmat_io.h halmat_debug.h
+HDRS = halmat.h halmat_types.h halmat_io.h halmat_debug.h hm_abend.h
 
 OBJS = $(SRCS:.c=.o)
 
