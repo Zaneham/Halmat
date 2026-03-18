@@ -1,0 +1,30 @@
+1  H A L   C O M P I L A T I O N   --   P H A S E   1   --   U N F O R M A T T E D   S O U R C E   L I S T I N G             PAGE 1
+-        C| / From PDF p. 97 of "Programming in HAL/S".                                    | 1    
+0      1 M|                                                                                | 2    
+0      1 M|  SAMPLE_FLOW:                                                                  | 3    
+0      1 M|  PROGRAM;                                                                      | 4    SAMPLE_FLOW
+0      1 M|     DECLARE INTEGER,                                                           | 5    SAMPLE_FLOW
+0      2 M|             I INITIAL(1), J INITIAL(2),                                        | 6    SAMPLE_FLOW
+0      2 M|             K, L, M INITIAL(3), N INITIAL(4);                                  | 7    SAMPLE_FLOW
+0      2 M|     DO UNTIL FALSE;                                                            | 8    SAMPLE_FLOW
+0      3 M|        IF I = 0 THEN                                                           | 9    SAMPLE_FLOW
+0      4 M|           DO;                                                                  | 10   SAMPLE_FLOW
+0      5 M|              J = 0;                                                            | 11   SAMPLE_FLOW
+0      6 M|              REPEAT;                                                           | 12   SAMPLE_FLOW
+0      7 M|           END;                                                                 | 13   SAMPLE_FLOW
+0      8 M|        ELSE                                                                    | 14   SAMPLE_FLOW
+0      8 M|           EXIT;                                                                | 15   SAMPLE_FLOW
+0      9 M|  LOOP2:                                                                        | 16   SAMPLE_FLOW
+0     10 M|        DO FOR K = 1 TO 10;                                                     | 17   SAMPLE_FLOW
+0     10 M|    LOOP3: DO FOR L = M, N, M + N;                                              | 18   SAMPLE_FLOW
+0     11 M|              IF J = 0 THEN                                                     | 19   SAMPLE_FLOW
+0     12 M|                 REPEAT LOOP2;                                                  | 20   SAMPLE_FLOW
+0     13 M|              ELSE                                                              | 21   SAMPLE_FLOW
+0     13 M|                 EXIT;                                                          | 22   SAMPLE_FLOW
+0     14 M|           END;                                                                 | 23   SAMPLE_FLOW
+0     15 M|        END;                                                                    | 24   SAMPLE_FLOW
+0     16 M|     END;                                                                       | 25   SAMPLE_FLOW
+0        C|  %SVCI(0);                                                                     | 26   SAMPLE_FLOW
+0     18 Y|  %SVCI(0);                                                                     | 26   SAMPLE_FLOW
+      18 M|  CLOSE SAMPLE_FLOW;                                                            | 27   SAMPLE_FLOW
+0     18 M|                                                                                | 28   SAMPLE_FLOW

@@ -110,7 +110,7 @@ int halmat_step(halmat_t *H)
     H->cycle_count++;
 
     if (rc < 0) {
-        H->halted = -1;
+        H->halted = rc;
         fprintf(stderr, "halmat_step: error %d at PC=%u (popcode=0x%03X)\n",
                 rc, H->pc, popcode);
     }

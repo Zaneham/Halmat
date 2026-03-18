@@ -1,10 +1,13 @@
 #include "halmat.h"
+#include <math.h>
 
+/* HAL/S spec: INTEGER(3.5)=4, INTEGER(-1.4)=-1.
+ * That's round-half-away-from-zero, not C's truncation. */
 static int32_t to_int(halmat_val_t v)
 {
     switch (v.type) {
     case HTYPE_INTEGER: return v.v.integer;
-    case HTYPE_SCALAR:  return (int32_t)v.v.scalar;
+    case HTYPE_SCALAR:  return (int32_t)round(v.v.scalar);
     case HTYPE_BIT:     return (int32_t)v.v.bits;
     default:            return 0;
     }

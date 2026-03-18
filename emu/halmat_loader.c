@@ -245,6 +245,7 @@ int halmat_load_common0(halmat_t *H, const char *filename)
 
     H->mem_image = (uint8_t *)malloc(HALMAT_MEM_SIZE);
     if (!H->mem_image) return -1;
+    memset(H->mem_image, 0, HALMAT_MEM_SIZE);
 
 #ifdef HAVE_ZLIB
     if (is_gz) {
@@ -252,7 +253,7 @@ int halmat_load_common0(halmat_t *H, const char *filename)
         if (!gz) { free(H->mem_image); H->mem_image = NULL; return -1; }
         int nread = gzread(gz, H->mem_image, HALMAT_MEM_SIZE);
         gzclose(gz);
-        if (nread != HALMAT_MEM_SIZE) {
+        if (nread <= 0) {
             free(H->mem_image); H->mem_image = NULL; return -1;
         }
         H->mem_image_loaded = 1;
@@ -266,7 +267,7 @@ int halmat_load_common0(halmat_t *H, const char *filename)
         if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
         size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
         pclose(fp);
-        if (nread != HALMAT_MEM_SIZE) {
+        if (nread == 0) {
             free(H->mem_image); H->mem_image = NULL; return -1;
         }
         H->mem_image_loaded = 1;
@@ -278,7 +279,7 @@ int halmat_load_common0(halmat_t *H, const char *filename)
     if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
     size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
     fclose(fp);
-    if (nread != HALMAT_MEM_SIZE) {
+    if (nread == 0) {
         free(H->mem_image); H->mem_image = NULL; return -1;
     }
     H->mem_image_loaded = 1;
