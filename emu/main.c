@@ -124,8 +124,14 @@ int main(int argc, char *argv[])
     }
 
     if (common0) {
-        if (halmat_load_common0(&H, common0) != 0)
-            fprintf(stderr, "Warning: failed to load %s\n", common0);
+        int rc = halmat_load_common0(&H, common0);
+        if (rc == -2) {
+            fprintf(stderr, "Error: file not found: %s\n", common0);
+            return 1;
+        } else if (rc != 0) {
+            fprintf(stderr, "Error: failed to load %s\n", common0);
+            return 1;
+        }
     } else {
         char autoc0[512];
         const char *sep3 = strrchr(halmat_file, '/');

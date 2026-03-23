@@ -250,12 +250,10 @@ int halmat_load_common0(halmat_t *H, const char *filename)
 #ifdef HAVE_ZLIB
     if (is_gz) {
         gzFile gz = gzopen(filename, "rb");
-        if (!gz) { free(H->mem_image); H->mem_image = NULL; return -1; }
+        if (!gz) { free(H->mem_image); H->mem_image = NULL; return -2; }
         int nread = gzread(gz, H->mem_image, HALMAT_MEM_SIZE);
         gzclose(gz);
-        if (nread <= 0) {
-            free(H->mem_image); H->mem_image = NULL; return -1;
-        }
+        (void)nread; /* empty is valid */
         H->mem_image_loaded = 1;
         return 0;
     }
@@ -264,25 +262,22 @@ int halmat_load_common0(halmat_t *H, const char *filename)
         char cmd[600];
         snprintf(cmd, sizeof(cmd), "gzip -dc \"%s\" 2>/dev/null", filename);
         FILE *fp = popen(cmd, "r");
-        if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
+        if (!fp) { free(H->mem_image); H->mem_image = NULL; return -2; }
         size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
         pclose(fp);
-        if (nread == 0) {
-            free(H->mem_image); H->mem_image = NULL; return -1;
-        }
+        (void)nread; /* empty is valid */
         H->mem_image_loaded = 1;
         return 0;
     }
 #endif
 
     FILE *fp = fopen(filename, "rb");
-    if (!fp) { free(H->mem_image); H->mem_image = NULL; return -1; }
+    if (!fp) { free(H->mem_image); H->mem_image = NULL; return -2; }
     size_t nread = fread(H->mem_image, 1, HALMAT_MEM_SIZE, fp);
     fclose(fp);
-    if (nread == 0) {
-        free(H->mem_image); H->mem_image = NULL; return -1;
-    }
+    /* Empty file is valid (no CHARACTER literals). Memory stays zeroed. */
     H->mem_image_loaded = 1;
+    (void)nread;
     return 0;
 }
 
