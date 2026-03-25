@@ -77,7 +77,10 @@ static void wr_str(const char *s)
     if (!s) return;
     int n = 0;
     while (s[n]) n++;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
     WRITE_FD(2, s, n);
+#pragma GCC diagnostic pop
 }
 
 static void wr_uint(unsigned v)
