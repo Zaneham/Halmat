@@ -118,6 +118,12 @@ int halmat_io_write(halmat_t *H, int channel, halmat_val_t *args,
     if (!fp) fp = stdout;
 
     for (int i = 0; i < nargs; i++) {
+        /* Field separator: N blanks between items, not before first */
+        if (i > 0 && H->num_blanks > 0) {
+            int nb = H->num_blanks;
+            if (nb > 20) nb = 20;
+            fprintf(fp, "%*s", nb, "");
+        }
         switch (arg_types[i]) {
         case 2:
             if (args[i].type == HTYPE_CHAR)

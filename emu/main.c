@@ -18,6 +18,7 @@ static void usage(const char *prog)
         "  --common F     Load COMMON memory image (.bin or .bin.gz)\n"
         "  --unit N=PATH  Map logical unit N to file (stdin/stdout/stderr for std streams)\n"
         "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
+        "  --num-blanks N Number of blanks between WRITE fields (default: 5)\n"
         "  --debug        Enter debugger mode\n"
         "  --trace        Print each instruction as it executes\n"
         "  --dump         Print ABEND dump on runtime errors\n"
@@ -73,6 +74,8 @@ int main(int argc, char *argv[])
                 snprintf(H.units[unit_num].path, sizeof(H.units[unit_num].path), "%s", path);
         } else if (strcmp(argv[i], "--ebcdic") == 0) {
             H.translate_ebcdic = 1;
+        } else if (strcmp(argv[i], "--num-blanks") == 0 && i + 1 < argc) {
+            H.num_blanks = atoi(argv[++i]);
         } else if (strcmp(argv[i], "--debug") == 0) {
             debug = 1;
         } else if (strcmp(argv[i], "--trace") == 0) {

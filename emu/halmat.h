@@ -290,6 +290,7 @@ typedef struct {
     uint64_t    stmt_count;
     uint32_t    current_stmt;               /* from SMRK TAG */
 
+    int         num_blanks;               /* blanks between WRITE fields (default 5) */
     int         debug_mode;
     int         single_step;
     breakpoint_t breakpoints[64];
