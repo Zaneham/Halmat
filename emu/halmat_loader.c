@@ -15,6 +15,7 @@ static uint32_t read_be32(FILE *fp)
 void halmat_init(halmat_t *H)
 {
     memset(H, 0, sizeof(*H));
+    H->num_blanks = 5; /* United Space Alliance default */
 }
 
 int halmat_load(halmat_t *H, const char *filename)
