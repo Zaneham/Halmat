@@ -13,6 +13,21 @@ static int32_t to_int(halmat_val_t v)
     }
 }
 
+/* Ron's AP-101S trace (LH/MR/SLL/STH on Don's emulator) confirmed
+ * INTEGER arithmetic wraps mod 2^16, INTEGER DOUBLE mod 2^32.
+ * No saturation. See issue #11. */
+static int32_t narrow_int(int32_t v, uint8_t prec)
+{
+    if (prec == HPREC_SINGLE)
+        return (int32_t)(int16_t)v;
+    return v;
+}
+
+static uint8_t wider_prec(halmat_val_t a, halmat_val_t b)
+{
+    return (a.precision > b.precision) ? a.precision : b.precision;
+}
+
 int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t tag)
 {
     uint32_t pc = H->pc;
@@ -24,8 +39,11 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t src = halmat_resolve_operand(H, H->code[pc + 1]);
         uint32_t dest = HALMAT_DATA(H->code[pc + 2]);
         if (dest < HALMAT_MAX_SYT) {
+            uint8_t prec = H->syt[dest].declared ? H->syt[dest].val.precision
+                                                 : src.precision;
             H->syt[dest].val.type = HTYPE_INTEGER;
-            H->syt[dest].val.v.integer = to_int(src);
+            H->syt[dest].val.precision = prec;
+            H->syt[dest].val.v.integer = narrow_int(to_int(src), prec);
             H->syt[dest].allocated = 1;
         }
         break;
@@ -37,7 +55,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = to_int(a) + to_int(b);
+        r.precision = wider_prec(a, b);
+        r.v.integer = narrow_int(to_int(a) + to_int(b), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -48,7 +67,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = to_int(a) - to_int(b);
+        r.precision = wider_prec(a, b);
+        r.v.integer = narrow_int(to_int(a) - to_int(b), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -59,7 +79,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = to_int(a) * to_int(b);
+        r.precision = wider_prec(a, b);
+        r.v.integer = narrow_int(to_int(a) * to_int(b), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -69,7 +90,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = -to_int(a);
+        r.precision = a.precision;
+        r.v.integer = narrow_int(-to_int(a), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -85,7 +107,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
             result *= base;
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = result;
+        r.precision = wider_prec(a, b);
+        r.v.integer = narrow_int(result, r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -95,7 +118,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = to_int(a);
+        r.precision = (a.precision == HPREC_DOUBLE) ? HPREC_DOUBLE : HPREC_SINGLE;
+        r.v.integer = narrow_int(to_int(a), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -105,7 +129,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = (int32_t)a.v.bits;
+        r.precision = HPREC_SINGLE;
+        r.v.integer = (int32_t)(int16_t)a.v.bits;
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -113,6 +138,7 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
     case POP_CTOI: {
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
+        r.precision = HPREC_SINGLE;
         r.v.integer = 0;
         halmat_store_vac(H, pc, r);
         break;
@@ -123,7 +149,8 @@ int halmat_exec_class6(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_INTEGER;
-        r.v.integer = to_int(a);
+        r.precision = a.precision;
+        r.v.integer = narrow_int(to_int(a), r.precision);
         halmat_store_vac(H, pc, r);
         break;
     }

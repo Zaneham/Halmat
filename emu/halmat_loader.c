@@ -291,6 +291,110 @@ void halmat_free_common0(halmat_t *H)
     H->mem_image_loaded = 0;
 }
 
+/* COMMON0.out is the text TSV dump of the compiler's symbol table.
+ * Without it we can't distinguish SCALAR from SCALAR DOUBLE or
+ * INTEGER from INTEGER DOUBLE — the HALMAT operand words don't carry
+ * precision, only the SYM_FLAGS in this file do. Format documented by
+ * Ron Burkey's unHALMAT.py. */
+
+#define SYM_FLAG_SINGLE 0x00800000u
+#define SYM_FLAG_DOUBLE 0x00400000u
+
+static int field_at(const char *line, int idx, char *out, int out_sz)
+{
+    int cur = 0;
+    const char *p = line;
+    while (cur < idx) {
+        const char *t = strchr(p, '\t');
+        if (!t) return -1;
+        p = t + 1;
+        cur++;
+    }
+    const char *end = strchr(p, '\t');
+    if (!end) end = p + strlen(p);
+    /* strip trailing CR/LF on last field */
+    while (end > p && (end[-1] == '\n' || end[-1] == '\r')) end--;
+    int n = (int)(end - p);
+    if (n >= out_sz) n = out_sz - 1;
+    memcpy(out, p, n);
+    out[n] = '\0';
+    return n;
+}
+
+static uint8_t map_sym_type(uint32_t st)
+{
+    switch (st & 0xFF) {
+    case 0x01: return HTYPE_BIT;
+    case 0x02: return HTYPE_CHAR;
+    case 0x03: return HTYPE_MATRIX;
+    case 0x04: return HTYPE_VECTOR;
+    case 0x05: return HTYPE_SCALAR;
+    case 0x06: return HTYPE_INTEGER;
+    case 0x09: return HTYPE_EVENT;
+    case 0x0A: return HTYPE_STRUCT;
+    default:   return HTYPE_NONE;
+    }
+}
+
+int halmat_load_symtab(halmat_t *H, const char *filename)
+{
+    FILE *fp = fopen(filename, "r");
+    if (!fp) return -1;
+
+    char line[1024];
+    int  in_symtab = 0;
+    int  cur_idx = -1;
+
+    while (fgets(line, sizeof(line), fp)) {
+        if (!in_symtab) {
+            if (line[0] != '/') continue;
+            in_symtab = 1;
+        }
+
+        char f0[8], f1[64];
+        if (field_at(line, 0, f0, sizeof(f0)) < 0) break;
+
+        if (f0[0] == '/') {
+            char f2[16], f3[16];
+            if (field_at(line, 1, f1, sizeof(f1)) < 0) break;
+            if (field_at(line, 2, f2, sizeof(f2)) < 0) break;
+            if (field_at(line, 3, f3, sizeof(f3)) < 0) break;
+            if (strcmp(f1, "SYMuTAB") != 0 || strcmp(f3, "BASED") != 0)
+                break;
+            cur_idx = atoi(f2);
+            if (cur_idx < 0 || cur_idx >= HALMAT_MAX_SYT) {
+                cur_idx = -1;
+                continue;
+            }
+            if ((uint32_t)cur_idx >= H->syt_count)
+                H->syt_count = (uint32_t)cur_idx + 1;
+        } else if (f0[0] == '.' && cur_idx >= 0) {
+            if (field_at(line, 1, f1, sizeof(f1)) < 0) continue;
+            char fv[64];
+            if (field_at(line, 4, fv, sizeof(fv)) < 0) continue;
+
+            syt_entry_t *e = &H->syt[cur_idx];
+            if (strcmp(f1, "SYM_TYPE") == 0) {
+                uint32_t st = (uint32_t)strtoul(fv, NULL, 16);
+                uint8_t  ht = map_sym_type(st);
+                if (ht != HTYPE_NONE) {
+                    e->val.type = ht;
+                    e->declared = 1;
+                }
+            } else if (strcmp(f1, "SYM_FLAGS") == 0) {
+                uint32_t sf = (uint32_t)strtoul(fv, NULL, 16);
+                if (sf & SYM_FLAG_DOUBLE)      e->val.precision = HPREC_DOUBLE;
+                else if (sf & SYM_FLAG_SINGLE) e->val.precision = HPREC_SINGLE;
+            }
+        } else {
+            break;
+        }
+    }
+
+    fclose(fp);
+    return 0;
+}
+
 void halmat_decode_char_lit(halmat_t *H, uint32_t lit_idx, char *buf, int *len)
 {
     if (lit_idx >= H->lit_count) {

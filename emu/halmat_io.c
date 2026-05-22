@@ -94,6 +94,23 @@ void halmat_io_shutdown(halmat_t *H)
     }
 }
 
+/* HAL/S-FC User's Manual p. 6-2: SCALAR is " d.dddddddE±dd" (14 cols),
+ * SCALAR DOUBLE is " d.ddddddddddddddddE±dd" (23 cols). Programmer's Guide
+ * §12.2: exact zero is " 0.0" right-padded with blanks to field width.
+ * DEFAULT means COMMON0 wasn't loaded; preserve pre-precision-rework
+ * output by treating it as SINGLE. */
+static void write_scalar(FILE *fp, double v, uint8_t prec)
+{
+    int wide = (prec == HPREC_DOUBLE);
+    int width = wide ? 23 : 14;
+    if (v == 0.0)
+        fprintf(fp, "%-*s", width, " 0.0");
+    else if (wide)
+        fprintf(fp, "% .16E", v);
+    else
+        fprintf(fp, "% .7E", v);
+}
+
 static void write_char(halmat_t *H, FILE *fp, const char *data, int len)
 {
     if (H->translate_ebcdic) {
@@ -132,10 +149,7 @@ int halmat_io_write(halmat_t *H, int channel, halmat_val_t *args,
         case 5: {
             double v = (args[i].type == HTYPE_INTEGER)
                        ? (double)args[i].v.integer : args[i].v.scalar;
-            if (v == 0.0)
-                fprintf(fp, " 0.0");
-            else
-                fprintf(fp, "% .7E", v);
+            write_scalar(fp, v, args[i].precision);
             break;
         }
         case 6: {
@@ -147,12 +161,9 @@ int halmat_io_write(halmat_t *H, int channel, halmat_val_t *args,
         default:
             if (args[i].type == HTYPE_INTEGER)
                 fprintf(fp, "%11d", args[i].v.integer);
-            else if (args[i].type == HTYPE_SCALAR) {
-                if (args[i].v.scalar == 0.0)
-                    fprintf(fp, " 0.0");
-                else
-                    fprintf(fp, "% .7E", args[i].v.scalar);
-            } else if (args[i].type == HTYPE_CHAR)
+            else if (args[i].type == HTYPE_SCALAR)
+                write_scalar(fp, args[i].v.scalar, args[i].precision);
+            else if (args[i].type == HTYPE_CHAR)
                 write_char(H, fp, args[i].v.string.data, (int)args[i].v.string.len);
             break;
         }
