@@ -304,6 +304,7 @@ int  halmat_load(halmat_t *H, const char *filename);
 int  halmat_load_litfile(halmat_t *H, const char *filename);
 int  halmat_load_strings(halmat_t *H, const char *source_file);
 int  halmat_load_common0(halmat_t *H, const char *filename);
+int  halmat_load_symtab(halmat_t *H, const char *filename);
 void halmat_free_common0(halmat_t *H);
 void halmat_build_flow_table(halmat_t *H);
 void halmat_init(halmat_t *H);

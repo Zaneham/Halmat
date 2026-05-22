@@ -1,6 +1,29 @@
 #include "halmat.h"
 #include <math.h>
 
+static double scal_val(halmat_val_t v)
+{
+    return (v.type == HTYPE_INTEGER) ? (double)v.v.integer : v.v.scalar;
+}
+
+/* HAL/S Programmer's Guide p.75: a binary op runs at the precision of
+ * its wider operand. Narrowing on store happens at SASN, not here. */
+static uint8_t wider_prec(halmat_val_t a, halmat_val_t b)
+{
+    return (a.precision > b.precision) ? a.precision : b.precision;
+}
+
+/* IBM single is 24-bit hex mantissa, same bit count as IEEE single,
+ * so a (float) round-trip is the right narrowing. Without this,
+ * SCALAR and SCALAR DOUBLE held identical bit patterns and X - X2
+ * always came out exactly zero in Ron's test (issue #10). */
+static double narrow_to_dest(double v, uint8_t dest_prec)
+{
+    if (dest_prec == HPREC_SINGLE)
+        return (double)(float)v;
+    return v;
+}
+
 int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t tag)
 {
     uint32_t pc = H->pc;
@@ -11,10 +34,12 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t src = halmat_resolve_operand(H, H->code[pc + 1]);
         uint32_t dest = HALMAT_DATA(H->code[pc + 2]);
-        double val = (src.type == HTYPE_INTEGER) ? (double)src.v.integer : src.v.scalar;
         if (dest < HALMAT_MAX_SYT) {
+            uint8_t prec = H->syt[dest].declared ? H->syt[dest].val.precision
+                                                 : src.precision;
             H->syt[dest].val.type = HTYPE_SCALAR;
-            H->syt[dest].val.v.scalar = val;
+            H->syt[dest].val.precision = prec;
+            H->syt[dest].val.v.scalar = narrow_to_dest(scal_val(src), prec);
             H->syt[dest].allocated = 1;
         }
         break;
@@ -24,11 +49,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = va + vb;
+        r.precision = wider_prec(a, b);
+        r.v.scalar = scal_val(a) + scal_val(b);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -37,11 +61,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = va - vb;
+        r.precision = wider_prec(a, b);
+        r.v.scalar = scal_val(a) - scal_val(b);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -50,11 +73,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = va * vb;
+        r.precision = wider_prec(a, b);
+        r.v.scalar = scal_val(a) * scal_val(b);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -63,15 +85,15 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
+        double vb = scal_val(b);
         if (vb == 0.0) {
             H->pc = pc + numop + 1;
             return HALMAT_ERR_DIV_ZERO;
         }
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = va / vb;
+        r.precision = wider_prec(a, b);
+        r.v.scalar = scal_val(a) / vb;
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -80,11 +102,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = pow(va, vb);
+        r.precision = wider_prec(a, b);
+        r.v.scalar = pow(scal_val(a), scal_val(b));
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -93,10 +114,11 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double base = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
+        double base = scal_val(a);
         int exp = (b.type == HTYPE_INTEGER) ? b.v.integer : (int)b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
+        r.precision = a.precision;
         r.v.scalar = pow(base, (double)exp);
         halmat_store_vac(H, pc, r);
         break;
@@ -106,11 +128,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
-        double vb = (b.type == HTYPE_INTEGER) ? (double)b.v.integer : b.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = pow(va, vb);
+        r.precision = wider_prec(a, b);
+        r.v.scalar = pow(scal_val(a), scal_val(b));
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -118,10 +139,10 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
     case POP_SNEG: {
         if (numop < 1) break;
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
-        double va = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = -va;
+        r.precision = a.precision;
+        r.v.scalar = -scal_val(a);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -131,7 +152,8 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
+        r.precision = (a.precision == HPREC_DOUBLE) ? HPREC_DOUBLE : HPREC_SINGLE;
+        r.v.scalar = scal_val(a);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -141,7 +163,8 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
-        r.v.scalar = (a.type == HTYPE_INTEGER) ? (double)a.v.integer : a.v.scalar;
+        r.precision = a.precision;
+        r.v.scalar = scal_val(a);
         halmat_store_vac(H, pc, r);
         break;
     }
@@ -151,6 +174,7 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
+        r.precision = HPREC_SINGLE;
         r.v.scalar = (double)a.v.bits;
         halmat_store_vac(H, pc, r);
         break;
@@ -159,6 +183,7 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
     case POP_CTOS: {
         halmat_val_t r = {0};
         r.type = HTYPE_SCALAR;
+        r.precision = HPREC_SINGLE;
         r.v.scalar = 0.0;
         halmat_store_vac(H, pc, r);
         break;

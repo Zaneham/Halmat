@@ -293,9 +293,21 @@ int halmat_exec_class0(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         }
 
         if (loop_var < HALMAT_MAX_SYT) {
-            H->syt[loop_var].val.type = HTYPE_SCALAR;
-            H->syt[loop_var].val.v.scalar = init_val.v.scalar;
-            H->syt[loop_var].allocated = 1;
+            syt_entry_t *lv = &H->syt[loop_var];
+            uint8_t want = lv->declared ? lv->val.type : HTYPE_SCALAR;
+            if (want == HTYPE_INTEGER) {
+                int32_t v = (init_val.type == HTYPE_SCALAR)
+                    ? (int32_t)init_val.v.scalar : init_val.v.integer;
+                if (lv->val.precision == HPREC_SINGLE)
+                    v = (int32_t)(int16_t)v;
+                lv->val.type = HTYPE_INTEGER;
+                lv->val.v.integer = v;
+            } else {
+                lv->val.type = HTYPE_SCALAR;
+                lv->val.v.scalar = (init_val.type == HTYPE_INTEGER)
+                    ? (double)init_val.v.integer : init_val.v.scalar;
+            }
+            lv->allocated = 1;
         }
 
         loop_info_t *loop = &H->loops[H->loop_depth++];

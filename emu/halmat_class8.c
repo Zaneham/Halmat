@@ -1,4 +1,5 @@
 #include "halmat.h"
+#include <math.h>
 
 int halmat_exec_class8(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t tag)
 {
@@ -11,12 +12,15 @@ int halmat_exec_class8(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         uint32_t dest = HALMAT_DATA(H->code[pc + 1]);
         halmat_val_t src = halmat_resolve_operand(H, H->code[pc + 2]);
         if (dest < HALMAT_MAX_SYT) {
+            uint8_t prec = H->syt[dest].declared ? H->syt[dest].val.precision
+                                                 : src.precision;
+            int32_t v = (src.type == HTYPE_SCALAR) ? (int32_t)round(src.v.scalar)
+                                                   : src.v.integer;
+            if (prec == HPREC_SINGLE)
+                v = (int32_t)(int16_t)v;
             H->syt[dest].val.type = HTYPE_INTEGER;
-            /* literals are IBM float */
-            if (src.type == HTYPE_SCALAR)
-                H->syt[dest].val.v.integer = (int32_t)src.v.scalar;
-            else
-                H->syt[dest].val.v.integer = src.v.integer;
+            H->syt[dest].val.precision = prec;
+            H->syt[dest].val.v.integer = v;
             H->syt[dest].allocated = 1;
         }
         break;
@@ -27,11 +31,15 @@ int halmat_exec_class8(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         uint32_t dest = HALMAT_DATA(H->code[pc + 1]);
         halmat_val_t src = halmat_resolve_operand(H, H->code[pc + 2]);
         if (dest < HALMAT_MAX_SYT) {
+            uint8_t prec = H->syt[dest].declared ? H->syt[dest].val.precision
+                                                 : src.precision;
+            double v = (src.type == HTYPE_INTEGER) ? (double)src.v.integer
+                                                   : src.v.scalar;
+            if (prec == HPREC_SINGLE)
+                v = (double)(float)v;
             H->syt[dest].val.type = HTYPE_SCALAR;
-            if (src.type == HTYPE_INTEGER)
-                H->syt[dest].val.v.scalar = (double)src.v.integer;
-            else
-                H->syt[dest].val.v.scalar = src.v.scalar;
+            H->syt[dest].val.precision = prec;
+            H->syt[dest].val.v.scalar = v;
             H->syt[dest].allocated = 1;
         }
         break;

@@ -15,11 +15,20 @@ enum {
     HTYPE_STRUCT  = 10
 };
 
+/* HAL/S precision: SCALAR is 32-bit float, SCALAR DOUBLE is 64-bit.
+ * INTEGER is 16-bit, INTEGER DOUBLE is 32-bit. Both narrow widths wrap.
+ * DEFAULT means COMMON0 wasn't loaded — fall back to wide width. */
+enum {
+    HPREC_DEFAULT = 0,
+    HPREC_SINGLE  = 1,
+    HPREC_DOUBLE  = 2
+};
+
 typedef struct {
     uint8_t  type;
+    uint8_t  precision;
     uint8_t  rows;
     uint8_t  cols;
-    uint8_t  _pad;
     union {
         int32_t  integer;
         double   scalar;
@@ -36,7 +45,8 @@ typedef struct {
 typedef struct {
     halmat_val_t val;
     uint8_t      allocated;
-    uint8_t      _pad[3];
+    uint8_t      declared;     /* 1 if type/precision came from COMMON0 */
+    uint8_t      _pad[2];
 } syt_entry_t;
 
 typedef struct {

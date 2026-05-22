@@ -25,6 +25,7 @@ halmat_val_t halmat_resolve_operand(halmat_t *H, uint32_t operand_word)
                 break;
             case 1: /* ARITH (single float) */
                 v.type = HTYPE_SCALAR;
+                v.precision = HPREC_SINGLE;
                 v.v.scalar = ibm_float_to_double((uint32_t)H->lit[data].lit2);
                 break;
             case 2: /* BIT */
@@ -33,6 +34,7 @@ halmat_val_t halmat_resolve_operand(halmat_t *H, uint32_t operand_word)
                 break;
             case 5: /* DOUBLE */
                 v.type = HTYPE_SCALAR;
+                v.precision = HPREC_DOUBLE;
                 v.v.scalar = ibm_double_to_double(
                     (uint32_t)H->lit[data].lit2,
                     (uint32_t)H->lit[data].lit3);
@@ -46,11 +48,13 @@ halmat_val_t halmat_resolve_operand(halmat_t *H, uint32_t operand_word)
 
     case QUAL_IMD:
         v.type = HTYPE_INTEGER;
+        v.precision = HPREC_SINGLE;
         v.v.integer = (int32_t)data;
         break;
 
     case QUAL_INL:
         v.type = HTYPE_INTEGER;
+        v.precision = HPREC_SINGLE;
         v.v.integer = (int32_t)data;
         break;
 

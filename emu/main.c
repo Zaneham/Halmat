@@ -16,6 +16,8 @@ static void usage(const char *prog)
         "  --disasm       Disassemble only (no execution)\n"
         "  --litfile F    Load literal table (resolves LIT references)\n"
         "  --common F     Load COMMON memory image (.bin or .bin.gz)\n"
+        "  --symtab F     Load compiler symbol-table dump (COMMON0.out, TSV)\n"
+        "  --dump-symtab  Print loaded SYT entries and exit\n"
         "  --unit N=PATH  Map logical unit N to file (stdin/stdout/stderr for std streams)\n"
         "  --ebcdic       Translate character output from EBCDIC CP 037 to ASCII\n"
         "  --num-blanks N Number of blanks between WRITE fields (default: 5)\n"
@@ -30,7 +32,9 @@ int main(int argc, char *argv[])
     const char *halmat_file = NULL;
     const char *litfile = NULL;
     const char *common0 = NULL;
+    const char *symtab = NULL;
     int disasm_only = 0;
+    int dump_symtab = 0;
     int debug = 0;
     int trace = 0;
 
@@ -45,6 +49,10 @@ int main(int argc, char *argv[])
             litfile = argv[++i];
         } else if ((strcmp(argv[i], "--common") == 0 || strcmp(argv[i], "--common0") == 0) && i + 1 < argc) {
             common0 = argv[++i];
+        } else if (strcmp(argv[i], "--symtab") == 0 && i + 1 < argc) {
+            symtab = argv[++i];
+        } else if (strcmp(argv[i], "--dump-symtab") == 0) {
+            dump_symtab = 1;
         } else if (strcmp(argv[i], "--unit") == 0 && i + 1 < argc) {
             i++;
             char *eq = strchr(argv[i], '=');
@@ -153,6 +161,22 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (symtab) {
+        if (halmat_load_symtab(&H, symtab) != 0)
+            fprintf(stderr, "warning: failed to load symbol table %s\n", symtab);
+    } else {
+        char autost[512];
+        const char *sep5 = strrchr(halmat_file, '/');
+        const char *sep6 = strrchr(halmat_file, '\\');
+        if (sep6 && (!sep5 || sep6 > sep5)) sep5 = sep6;
+        int dl5 = sep5 ? (int)(sep5 - halmat_file + 1) : 0;
+        if (sep5)
+            snprintf(autost, sizeof(autost), "%.*sCOMMON0.out", dl5, halmat_file);
+        else
+            snprintf(autost, sizeof(autost), "COMMON0.out");
+        halmat_load_symtab(&H, autost);
+    }
+
     if (!H.mem_image_loaded) {
         char autosrc[512];
         const char *sep3 = strrchr(halmat_file, '/');
@@ -185,6 +209,25 @@ int main(int argc, char *argv[])
     }
 
     halmat_build_flow_table(&H);
+
+    if (dump_symtab) {
+        static const char *type_names[] = {
+            "NONE", "BIT", "CHAR", "MATRIX", "VECTOR", "SCALAR",
+            "INTEGER", "BOOL", "?", "EVENT", "STRUCT"
+        };
+        static const char *prec_names[] = { "DEFAULT", "SINGLE", "DOUBLE" };
+        printf("SYT entries (count=%u):\n", H.syt_count);
+        for (uint32_t i = 0; i < H.syt_count; i++) {
+            uint8_t t = H.syt[i].val.type;
+            uint8_t p = H.syt[i].val.precision;
+            printf("  [%u] type=%-8s precision=%-7s declared=%u\n",
+                   i,
+                   (t < 11) ? type_names[t] : "?",
+                   (p < 3)  ? prec_names[p] : "?",
+                   H.syt[i].declared);
+        }
+        return 0;
+    }
 
     if (disasm_only) {
         printf("HALMAT DISASSEMBLY: %s\n", halmat_file);
