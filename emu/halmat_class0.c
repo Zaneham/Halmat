@@ -1,5 +1,6 @@
 #include "halmat.h"
 #include "halmat_io.h"
+#include <math.h>   /* round() for scalar -> INTEGER conversion (issue #11) */
 
 /* Advance PC past current operator + operands */
 #define ADVANCE() do { H->pc += numop + 1; } while (0)
@@ -296,8 +297,10 @@ int halmat_exec_class0(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
             syt_entry_t *lv = &H->syt[loop_var];
             uint8_t want = lv->declared ? lv->val.type : HTYPE_SCALAR;
             if (want == HTYPE_INTEGER) {
+                /* SCALAR -> INTEGER rounds half away from zero, matching
+                 * class6 to_int(); FOR bounds follow the same rule. */
                 int32_t v = (init_val.type == HTYPE_SCALAR)
-                    ? (int32_t)init_val.v.scalar : init_val.v.integer;
+                    ? (int32_t)round(init_val.v.scalar) : init_val.v.integer;
                 if (lv->val.precision == HPREC_SINGLE)
                     v = (int32_t)(int16_t)v;
                 lv->val.type = HTYPE_INTEGER;
@@ -513,8 +516,12 @@ int halmat_exec_class0(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
             uint8_t arg_type = (uint8_t)HALMAT_TAG1(ow);
 
             if (arg_type == 6 && val.type == HTYPE_SCALAR) {
+                /* SCALAR written as an INTEGER field rounds half away from
+                 * zero (HAL/S Language Spec; Ryer p.3-4), not truncates.
+                 * Was (int32_t)val.v.scalar, which gave 8 for 8.76 instead
+                 * of 9. Consistent with class6 to_int(). See issue #11. */
                 val.type = HTYPE_INTEGER;
-                val.v.integer = (int32_t)val.v.scalar;
+                val.v.integer = (int32_t)round(val.v.scalar);
             }
 
             H->io.args[H->io.nargs] = val;
