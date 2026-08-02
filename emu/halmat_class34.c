@@ -6,6 +6,18 @@ static double val_scalar(halmat_val_t v)
     return (v.type == HTYPE_INTEGER) ? (double)v.v.integer : v.v.scalar;
 }
 
+/* HALMAT operand words carry no shape, so declared rows/cols reach us only
+   via COMMON0. Without it every element loop runs zero times, which used to
+   look like a working matrix that quietly produced zeros — say so instead. */
+static void shape_check(halmat_val_t v, uint32_t pc)
+{
+    static int warned = 0;
+    if (v.rows != 0 || warned) return;
+    warned = 1;
+    fprintf(stderr, "halmat_class34: operand at PC=%u has no declared shape; "
+            "results will be empty. Supply the symbol table with --symtab.\n", pc);
+}
+
 int halmat_exec_class3(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t tag)
 {
     uint32_t pc = H->pc;
@@ -30,6 +42,7 @@ int halmat_exec_class3(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
+        shape_check(a, pc);
         r.type = HTYPE_MATRIX;
         r.rows = a.rows > b.rows ? a.rows : b.rows;
         r.cols = a.cols > b.cols ? a.cols : b.cols;
@@ -93,6 +106,7 @@ int halmat_exec_class3(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
         r.type = HTYPE_MATRIX;
+        shape_check(a, pc);
         r.rows = a.rows;
         r.cols = b.cols;
         for (int i = 0; i < a.rows && i < 8; i++)
@@ -151,6 +165,7 @@ int halmat_exec_class4(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t b = halmat_resolve_operand(H, H->code[pc + 2]);
         halmat_val_t r = {0};
         r.type = HTYPE_VECTOR;
+        shape_check(a, pc);
         r.rows = a.rows > b.rows ? a.rows : b.rows;
         int n = r.rows;
         if (n > 64) n = 64;

@@ -385,10 +385,34 @@ int halmat_load_symtab(halmat_t *H, const char *filename)
                 uint32_t sf = (uint32_t)strtoul(fv, NULL, 16);
                 if (sf & SYM_FLAG_DOUBLE)      e->val.precision = HPREC_DOUBLE;
                 else if (sf & SYM_FLAG_SINGLE) e->val.precision = HPREC_SINGLE;
+            } else if (strcmp(f1, "SYM_LENGTH") == 0) {
+                /* MATRIX packs its shape as rows<<8|cols — see MULTIPLY.xpl's
+                   SHL(PSEUDO_LENGTH,8) juggling. VECTOR is a plain length. */
+                uint32_t sl = (uint32_t)strtoul(fv, NULL, 16);
+                e->val.rows = (uint8_t)((sl >> 8) & 0xFF);
+                e->val.cols = (uint8_t)(sl & 0xFF);
+                e->val.blen = (uint8_t)(sl & 0xFF);
             }
         } else {
             break;
         }
+    }
+
+    /* Language Spec 4.5: MATRIX with no size specification is 3x3, VECTOR
+       is a 3-vector. SYM_LENGTH may arrive before SYM_TYPE, so reconcile
+       shape against type once the whole table is in. */
+    for (uint32_t i = 0; i < H->syt_count; i++) {
+        halmat_val_t *v = &H->syt[i].val;
+        if (v->type == HTYPE_MATRIX) {
+            if (v->rows == 0 || v->cols == 0) { v->rows = 3; v->cols = 3; }
+        } else if (v->type == HTYPE_VECTOR) {
+            if (v->cols != 0) v->rows = v->cols;   /* packed as a plain length */
+            if (v->rows == 0) v->rows = 3;
+            v->cols = 1;
+        } else {
+            v->rows = v->cols = 0;
+        }
+        if (v->type != HTYPE_BIT) v->blen = 0;
     }
 
     fclose(fp);

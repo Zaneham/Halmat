@@ -94,21 +94,14 @@ void halmat_io_shutdown(halmat_t *H)
     }
 }
 
-/* HAL/S-FC User's Manual p. 6-2: SCALAR is " d.dddddddE±dd" (14 cols),
- * SCALAR DOUBLE is " d.ddddddddddddddddE±dd" (23 cols). Programmer's Guide
- * §12.2: exact zero is " 0.0" right-padded with blanks to field width.
- * DEFAULT means COMMON0 wasn't loaded; preserve pre-precision-rework
- * output by treating it as SINGLE. */
+/* Shares halmat_sfmt() with STOC — WRITE and SCALAR-to-CHARACTER are the
+ * same Appendix D representation, so they must not drift apart. DEFAULT
+ * means COMMON0 wasn't loaded; treat it as SINGLE. */
 static void write_scalar(FILE *fp, double v, uint8_t prec)
 {
-    int wide = (prec == HPREC_DOUBLE);
-    int width = wide ? 23 : 14;
-    if (v == 0.0)
-        fprintf(fp, "%-*s", width, " 0.0");
-    else if (wide)
-        fprintf(fp, "% .16E", v);
-    else
-        fprintf(fp, "% .7E", v);
+    char buf[64];
+    halmat_sfmt(buf, (int)sizeof buf, v, prec);
+    fputs(buf, fp);
 }
 
 static void write_char(halmat_t *H, FILE *fp, const char *data, int len)

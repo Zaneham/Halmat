@@ -300,6 +300,10 @@ typedef struct {
 double ibm_float_to_double(uint32_t w);
 double ibm_double_to_double(uint32_t w_hi, uint32_t w_lo);
 
+int32_t halmat_cint(const char *s, int len, int *ok);
+double  halmat_cnum(const char *s, int len, int *ok);
+int     halmat_sfmt(char *buf, int n, double v, uint8_t prec);
+
 int  halmat_load(halmat_t *H, const char *filename);
 int  halmat_load_litfile(halmat_t *H, const char *filename);
 int  halmat_load_strings(halmat_t *H, const char *source_file);

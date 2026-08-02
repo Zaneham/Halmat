@@ -29,6 +29,7 @@ typedef struct {
     uint8_t  precision;
     uint8_t  rows;
     uint8_t  cols;
+    uint8_t  blen;       /* declared BIT width; 0 when COMMON0 wasn't loaded */
     union {
         int32_t  integer;
         double   scalar;

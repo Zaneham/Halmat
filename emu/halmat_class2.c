@@ -62,7 +62,7 @@ int halmat_exec_class2(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
         r.type = HTYPE_CHAR;
-        int n = snprintf(r.v.string.data, 256, "%g", a.v.scalar);
+        int n = halmat_sfmt(r.v.string.data, 256, a.v.scalar, a.precision);
         r.v.string.len = (uint16_t)(n > 255 ? 255 : n);
         halmat_store_vac(H, pc, r);
         break;

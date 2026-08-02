@@ -181,10 +181,19 @@ int halmat_exec_class5(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
     }
 
     case POP_CTOS: {
+        if (numop < 1) break;
+        halmat_val_t a = halmat_resolve_operand(H, H->code[pc + 1]);
         halmat_val_t r = {0};
+        int ok;
         r.type = HTYPE_SCALAR;
         r.precision = HPREC_SINGLE;
-        r.v.scalar = 0.0;
+        r.v.scalar = halmat_cnum(a.v.string.data, a.v.string.len, &ok);
+        if (!ok) {
+            fprintf(stderr, "halmat_class5: CTOS operand '%.*s' at PC=%u is "
+                    "not an arithmetic literal\n",
+                    (int)a.v.string.len, a.v.string.data, pc);
+            return HALMAT_ERR_BAD_QUAL;
+        }
         halmat_store_vac(H, pc, r);
         break;
     }

@@ -121,7 +121,7 @@ All 9 test programs execute and produce correct output:
 | ifelse | IF/ELSE, character WRITE | `C IS FIVE` / `DONE` |
 | while | DO WHILE, scalar accumulation | `TOTAL= 45` |
 | discrete_for | DO FOR with discrete values | `RESULT= 63` |
-| case | DO CASE | `RESULT= 30` |
+| case | DO CASE | `RESULT= 20` |
 | nested | Nested FOR loops | `K= 150` |
 | proc | Function call, return value | `Y= 6` |
 | array | Array subscripting | (no output, no crash) |

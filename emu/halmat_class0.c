@@ -431,10 +431,12 @@ int halmat_exec_class0(halmat_t *H, uint32_t popcode, uint32_t numop, uint32_t t
         if (numop < 2) { ADVANCE(); return HALMAT_OK; }
         halmat_val_t sel = halmat_resolve_operand(H, H->code[H->pc + 2]);
         int case_val = (sel.type == HTYPE_SCALAR)
-                       ? (int)sel.v.scalar : sel.v.integer;
+                       ? (int32_t)round(sel.v.scalar) : sel.v.integer;
 
+        /* Selection is 1-based: k picks the kth case, per Programmer's
+           Guide 10.3 and the compiler's own CASE_STACK numbering. */
         uint32_t scan = H->pc + numop + 1;
-        int case_idx = 0;
+        int case_idx = 1;
         int found = 0;
         uint32_t target = 0;
 
