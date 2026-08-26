@@ -6,3 +6,7 @@ print-pdf.js
 space-shuttle.png
 style.css
 titlepage.html
+_build/
+*.o
+emu/yaHALMAT
+emu/yaHALMAT.exe
